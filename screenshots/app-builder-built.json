@@ -1,0 +1,41 @@
+{
+  "url": "http://127.0.0.1:8081/",
+  "viewports": {
+    "desktop": {
+      "width": 1280,
+      "height": 800,
+      "status": 200,
+      "title": "华旅纪 Sino Atlas",
+      "hasCanvas": true,
+      "bodyTextLen": 458,
+      "bodyTextHash": "7961ff32fd94e24c349c97681d99cea12d6286bdb1be0678a1caaa2d22948068",
+      "bodyTextPrefix": "华旅纪 SINO ATLAS 图幅 目的地 体验 四季 手记 行程 浅线 · 邻邦 点阵 · 中国 岸点 · 海岸 朱砂 · 目",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/app-builder-built.png"
+    },
+    "mobile": {
+      "width": 390,
+      "height": 844,
+      "status": 200,
+      "title": "华旅纪 Sino Atlas",
+      "hasCanvas": true,
+      "bodyTextLen": 406,
+      "bodyTextHash": "66359bcd7c8df7b29e0694ee7cafb7d17e0673adfc01a5e277b1684cf076e412",
+      "bodyTextPrefix": "华旅纪 SINO ATLAS ATLAS 图幅 点选省份，或地图上的朱砂圆点。周边国家只作方位，不可交互。 滚轮缩放。点邻省直接",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/app-builder-built-mobile.png"
+    }
+  },
+  "brandWarnings": [
+    "BRAND WARNING: this looks like a game/canvas app but src/lib/og/site.json is missing \"type\": \"x:game\". X uses og:type=x:game to present the unfurl as a game card — set it in /workspace/src/lib/og/site.json per /workspace/.grok/skills/og/SKILL.md. Do not invent x:type or overload twitter:card as the game signal.",
+    "BRAND WARNING: this looks like a game/canvas app but /workspace/public/x-banner.jpg is missing. Games need a 50:11 X feed card (1200×264 JPEG) at public/x-banner.jpg — open /workspace/.grok/skills/og/SKILL.md and finish the brand-asset pass."
+  ],
+  "authWarnings": [],
+  "verdictFile": "/workspace/screenshots/app-builder-built.json",
+  "divergesFromBaseline": false,
+  "baselineReasons": []
+}

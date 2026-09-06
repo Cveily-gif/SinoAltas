@@ -1,0 +1,1 @@
+import{l as e,t}from"./utils-CPgjxa7l.js";var n=e();function r({index:e,label:r,className:i}){return(0,n.jsxs)(`div`,{className:t(`flex items-center gap-3 text-xs tracking-[0.28em] uppercase text-stone`,i),children:[e?(0,n.jsx)(`span`,{className:`text-latin tabular-nums text-cinnabar`,children:e}):null,(0,n.jsx)(`span`,{className:`font-sans`,children:r})]})}export{r as t};
