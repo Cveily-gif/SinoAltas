@@ -244,18 +244,50 @@ export function DashboardPanel({
           </div>
         ) : (
           <div className="rise-in mt-5">
-            <p className="text-sm leading-relaxed text-paper/80">
-              点选省份，或地图上的朱砂圆点。周边国家只作方位，不可交互。
+            <p className="text-xs tracking-[0.2em] uppercase text-stone-light">
+              用法
             </p>
+            <ol className="mt-3 space-y-3">
+              {[
+                {
+                  n: "01",
+                  t: "点省份",
+                  d: "点进一个省，图会落到该省。再点邻省，直接换过去。",
+                },
+                {
+                  n: "02",
+                  t: "点朱砂",
+                  d: "圆点是推荐城市。点开后可写入行程。",
+                },
+                {
+                  n: "03",
+                  t: "滚轮与拖动",
+                  d: "放大细看，按住拖移。港澳在南海附图里点。",
+                },
+                {
+                  n: "04",
+                  t: "回到全国",
+                  d: "点海面、境外，或再缩小，即可退出省份。",
+                },
+              ].map((step) => (
+                <li key={step.n} className="flex gap-3">
+                  <span className="text-latin mt-0.5 w-6 shrink-0 text-[11px] tabular-nums tracking-widest text-cinnabar">
+                    {step.n}
+                  </span>
+                  <span>
+                    <span className="block text-sm text-paper">{step.t}</span>
+                    <span className="mt-0.5 block text-sm leading-relaxed text-paper/70">
+                      {step.d}
+                    </span>
+                  </span>
+                </li>
+              ))}
+            </ol>
             {hoverProv ? (
-              <p className="mt-2 text-sm text-stone-light">
-                现悬停：{shortProvinceName(hoverProv.name)}
+              <p className="mt-4 text-sm text-stone-light">
+                现悬停：{shortProvinceName(hoverProv.name)}，点下去进入。
               </p>
-            ) : (
-              <p className="mt-2 text-sm text-stone-light">
-                滚轮缩放。点邻省直接切换；点海洋、境外或再缩小，回到全国。
-              </p>
-            )}
+            ) : null}
             <div className="mt-5 grid grid-cols-3 gap-3 border-y border-paper/10 py-4">
               {[
                 { n: "34", l: "省区" },

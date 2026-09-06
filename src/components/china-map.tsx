@@ -1124,7 +1124,7 @@ export const ChinaMap = forwardRef<ChinaMapHandle, Props>(function ChinaMap(
 		<div
 			ref={wrapRef}
 			role="application"
-			aria-label="中国旅游点阵图幅。滚轮缩放，点选省份或目的地。"
+			aria-label="中国旅游图幅。点省份进入，点朱砂打开城市，滚轮缩放，点海面返回全国。"
 			className={cn("relative h-full min-h-[52svh] w-full touch-none overflow-hidden bg-ink select-none lg:min-h-0")}
 			style={{ cursor }}
 			onPointerDown={onPointerDown}
