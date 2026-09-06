@@ -126,12 +126,6 @@ function Home() {
             </div>
           )}
           <div className="pointer-events-none absolute inset-x-0 top-0 h-16 bg-gradient-to-b from-ink/40 to-transparent" />
-          <div className="pointer-events-none absolute bottom-5 left-5 hidden text-[11px] tracking-[0.2em] uppercase text-paper/45 sm:block">
-            <p>浅线 · 邻邦</p>
-            <p className="mt-1">点阵 · 中国</p>
-            <p className="mt-1">岸点 · 海岸</p>
-            <p className="mt-1">朱砂 · 目的地</p>
-          </div>
         </div>
 
         {data ? (
