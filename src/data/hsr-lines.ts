@@ -218,12 +218,14 @@ const C = {
 } as const;
 
 type City = keyof typeof C;
+export type HsrRank = "trunk" | "branch";
 
 const path = (...keys: City[]) => keys.map((k) => [...C[k]] as [number, number]);
+const T = (...keys: City[]) => ({ rank: "trunk" as const, pts: path(...keys) });
+const B = (...keys: City[]) => ({ rank: "branch" as const, pts: path(...keys) });
 
-export const hsrLines: [number, number][][] = [
-  // 沿海通道
-  path(
+export const hsrCorridors: { rank: HsrRank; pts: [number, number][] }[] = [
+  T(
     "dandong", "dalian", "yingkou", "panjin", "jinzhou", "huludao", "qinhuangdao",
     "tangshan", "tianjin", "dongying", "weifang", "qingdao", "rizhao", "lianyungang",
     "yancheng", "nantong", "shanghai", "jiaxing", "hangzhou", "ningbo", "taizhouzj",
@@ -231,105 +233,72 @@ export const hsrLines: [number, number][][] = [
     "chaozhou", "shantou", "shanwei", "huizhou", "shenzhen", "jiangmen", "yangjiang",
     "maoming", "zhanjiang", "beihai", "qinzhou", "fangchenggang",
   ),
-  // 京沪
-  path(
+  T(
     "beijing", "langfang", "tianjin", "cangzhou", "dezhou", "jinan", "taian",
     "qufu", "zaozhuang", "xuzhou", "suzhouah", "bengbu", "chuzhou", "nanjing",
     "zhenjiang", "changzhou", "wuxi", "suzhou", "shanghai",
   ),
-  // 宁杭
-  path("nanjing", "yixing", "huzhou", "hangzhou"),
-  // 京广深港
-  path(
+  B("nanjing", "yixing", "huzhou", "hangzhou"),
+  T(
     "beijing", "baoding", "shijiazhuang", "xingtai", "handan", "anyang", "xinxiang",
     "zhengzhou", "xuchang", "luohe", "zhumadian", "xinyang", "xiaogan", "wuhan",
     "xianning", "yueyang", "changsha", "zhuzhou", "hengyang", "chenzhou", "shaoguan",
     "qingyuan", "guangzhou", "dongguan", "shenzhen", "hongkong",
   ),
-  // 广珠澳
-  path("guangzhou", "jiangmen", "zhuhai", "macau"),
-  // 京哈
-  path(
+  B("guangzhou", "jiangmen", "zhuhai", "macau"),
+  T(
     "beijing", "chengde", "chaoyang", "fuxin", "shenyang", "tieling", "siping",
     "changchun", "harbin",
   ),
-  // 秦沈 · 哈大
-  path("tianjin", "tangshan", "qinhuangdao", "huludao", "jinzhou", "shenyang"),
-  path("harbin", "changchun", "siping", "shenyang", "liaoyang", "anshan", "yingkou", "dalian"),
-  // 京港台（京赣深）
-  path(
+  T("tianjin", "tangshan", "qinhuangdao", "huludao", "jinzhou", "shenyang"),
+  T("harbin", "changchun", "siping", "shenyang", "liaoyang", "anshan", "yingkou", "dalian"),
+  T(
     "beijing", "xiongan", "hengshui", "liaocheng", "heze", "shangqiu", "fuyang",
     "hefei", "jiujiang", "nanchang", "ganzhou", "heyuan", "huizhou", "shenzhen", "hongkong",
   ),
-  // 合福
-  path("hefei", "huangshan", "shangrao", "nanping", "fuzhou"),
-  // 呼南
-  path(
+  B("hefei", "huangshan", "shangrao", "nanping", "fuzhou"),
+  T(
     "hohhot", "ulanqab", "datong", "taiyuan", "jiaozuo", "zhengzhou", "nanyang",
     "xiangyang", "jingmen", "yichang", "changde", "yiyang", "shaoyang", "yongzhou",
     "guilin", "liuzhou", "nanning",
   ),
-  // 京昆
-  path("beijing", "baoding", "shijiazhuang", "taiyuan", "xian", "hanzhong", "guangyuan", "mianyang", "deyang", "chengdu", "leshan", "yibin", "xingyi", "kunming"),
-  // 包海
-  path("baotou", "ordos", "yulin", "yanan", "xian", "hanzhong", "chongqing", "zunyi", "guiyang", "baise", "nanning", "qinzhou", "beihai"),
-  // 兰广（兰州—成都段；成贵、贵广另列）
-  path("lanzhou", "tianshui", "guangyuan", "mianyang", "chengdu"),
-  path("chengdu", "neijiang", "chongqing", "zunyi", "guiyang", "guilin", "zhaoqing", "guangzhou"),
-  // 沪昆
-  path(
+  T("beijing", "baoding", "shijiazhuang", "taiyuan", "xian", "hanzhong", "guangyuan", "mianyang", "deyang", "chengdu", "leshan", "yibin", "xingyi", "kunming"),
+  T("baotou", "ordos", "yulin", "yanan", "xian", "hanzhong", "chongqing", "zunyi", "guiyang", "baise", "nanning", "qinzhou", "beihai"),
+  T("lanzhou", "tianshui", "guangyuan", "mianyang", "chengdu"),
+  T("chengdu", "neijiang", "chongqing", "zunyi", "guiyang", "guilin", "zhaoqing", "guangzhou"),
+  T(
     "shanghai", "jiaxing", "hangzhou", "yiwu", "jinhua", "quzhou", "shangrao",
     "yingtan", "nanchang", "xinyu", "pingxiang", "zhuzhou", "xiangtan", "shaoyang",
     "huaihua", "tongren", "kaili", "guiyang", "anshun", "liupanshui", "qujing", "kunming",
   ),
-  // 陆桥 连云港—乌鲁木齐
-  path(
+  T(
     "lianyungang", "xuzhou", "shangqiu", "kaifeng", "zhengzhou", "luoyang",
     "sanmenxia", "weinan", "xian", "baoji", "tianshui", "dingxi", "lanzhou",
     "xining", "zhangye", "jiuquan", "jiayuguan", "hami", "turpan", "urumqi",
   ),
-  // 沿江
-  path("shanghai", "suzhou", "wuxi", "nanjing", "hefei", "luan", "macheng", "wuhan", "yichang", "enshi", "lichuan", "chongqing", "suining", "chengdu"),
-  // 西成
-  path("xian", "hanzhong", "guangyuan", "jiangyou", "mianyang", "deyang", "chengdu"),
-  // 成渝
-  path("chengdu", "ziyang", "neijiang", "chongqing"),
-  // 胶济 · 青荣
-  path("qingdao", "weifang", "zibo", "jinan"),
-  path("qingdao", "yantai", "weihai"),
-  // 青银
-  path("qingdao", "jinan", "dezhou", "shijiazhuang", "taiyuan", "yulin", "yinchuan"),
-  // 京兰
-  path("beijing", "zhangjiakou", "ulanqab", "hohhot", "baotou", "yinchuan", "wuzhong", "zhongwei", "lanzhou"),
-  // 石济
-  path("jinan", "liaocheng", "hengshui", "shijiazhuang"),
-  // 南广 · 广昆
-  path("nanning", "wuzhou", "zhaoqing", "guangzhou"),
-  path("nanning", "baise", "xingyi", "kunming"),
-  // 贵广
-  path("guiyang", "guilin", "zhaoqing", "guangzhou"),
-  // 成贵
-  path("chengdu", "leshan", "yibin", "guiyang"),
-  // 渝贵 · 渝万
-  path("chongqing", "zunyi", "guiyang"),
-  path("chongqing", "wanzhou"),
-  // 郑万
-  path("zhengzhou", "nanyang", "xiangyang", "wanzhou", "chongqing"),
-  // 厦渝
-  path("xiamen", "zhangzhou", "longyan", "ganzhou", "changsha", "changde", "zhangjiajie", "qianjiang", "chongqing"),
-  // 杭昌
-  path("hangzhou", "huangshan", "jingdezhen", "nanchang"),
-  path("hefei", "wuhu", "hangzhou"),
-  // 昌福
-  path("nanchang", "nanping", "fuzhou"),
-  // 赣深已在京港
-  // 绥满（哈齐段）
-  path("suifenhe", "mudanjiang", "harbin", "daqing", "qiqihar"),
-  // 海南环岛
-  path("haikou", "qionghai", "lingshui", "sanya", "dongfang", "danzhou", "haikou"),
-  // 沪宁沿江辅
-  path("shanghai", "nantong", "yangzhou", "nanjing"),
-  path("lianyungang", "huaian", "yangzhou", "nanjing"),
+  T("shanghai", "suzhou", "wuxi", "nanjing", "hefei", "luan", "macheng", "wuhan", "yichang", "enshi", "lichuan", "chongqing", "suining", "chengdu"),
+  T("xian", "hanzhong", "guangyuan", "jiangyou", "mianyang", "deyang", "chengdu"),
+  T("chengdu", "ziyang", "neijiang", "chongqing"),
+  T("qingdao", "weifang", "zibo", "jinan"),
+  B("qingdao", "yantai", "weihai"),
+  T("qingdao", "jinan", "dezhou", "shijiazhuang", "taiyuan", "yulin", "yinchuan"),
+  T("beijing", "zhangjiakou", "ulanqab", "hohhot", "baotou", "yinchuan", "wuzhong", "zhongwei", "lanzhou"),
+  B("jinan", "liaocheng", "hengshui", "shijiazhuang"),
+  T("nanning", "wuzhou", "zhaoqing", "guangzhou"),
+  T("nanning", "baise", "xingyi", "kunming"),
+  T("guiyang", "guilin", "zhaoqing", "guangzhou"),
+  T("chengdu", "leshan", "yibin", "guiyang"),
+  B("chongqing", "zunyi", "guiyang"),
+  B("chongqing", "wanzhou"),
+  B("zhengzhou", "nanyang", "xiangyang", "wanzhou", "chongqing"),
+  T("xiamen", "zhangzhou", "longyan", "ganzhou", "changsha", "changde", "zhangjiajie", "qianjiang", "chongqing"),
+  B("hangzhou", "huangshan", "jingdezhen", "nanchang"),
+  B("hefei", "wuhu", "hangzhou"),
+  B("nanchang", "nanping", "fuzhou"),
+  B("suifenhe", "mudanjiang", "harbin", "daqing", "qiqihar"),
+  T("haikou", "qionghai", "lingshui", "sanya", "dongfang", "danzhou", "haikou"),
+  B("shanghai", "nantong", "yangzhou", "nanjing"),
+  B("lianyungang", "huaian", "yangzhou", "nanjing"),
 ];
 
 export const hsrStations: { name: string; lon: number; lat: number }[] = [

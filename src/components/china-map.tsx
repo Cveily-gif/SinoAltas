@@ -9,7 +9,7 @@ import {
 } from "react";
 import { destGeo } from "@/data/dest-geo";
 import { destinations } from "@/data/destinations";
-import { hsrLines, hsrStations } from "@/data/hsr-lines";
+import { hsrCorridors, hsrStations } from "@/data/hsr-lines";
 import { shortProvinceName, toQuantized } from "@/lib/geo";
 import { cn } from "@/lib/utils";
 
@@ -282,13 +282,13 @@ export const ChinaMap = forwardRef<ChinaMapHandle, Props>(function ChinaMap(
 	]);
 	const railPaths = useMemo(() => {
 		const spanMax = 0.55;
-		return hsrLines.map((line) => {
+		return hsrCorridors.map((c) => {
 			const dense: [number, number][] = [];
-			for (let i = 0; i < line.length; i++) {
-				const a = line[i];
+			for (let i = 0; i < c.pts.length; i++) {
+				const a = c.pts[i];
 				if (!a) continue;
 				dense.push(a);
-				const b = line[i + 1];
+				const b = c.pts[i + 1];
 				if (!b) continue;
 				const d = Math.hypot(b[0] - a[0], b[1] - a[1]);
 				const n = Math.max(1, Math.ceil(d / spanMax));
@@ -297,10 +297,13 @@ export const ChinaMap = forwardRef<ChinaMapHandle, Props>(function ChinaMap(
 					dense.push([a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t]);
 				}
 			}
-			return dense.map((pt) => {
-				const q = toQuantized(pt[0], pt[1], data.bounds, data.q);
-				return [q.x, q.y] as [number, number];
-			});
+			return {
+				rank: c.rank,
+				line: dense.map((pt) => {
+					const q = toQuantized(pt[0], pt[1], data.bounds, data.q);
+					return [q.x, q.y] as [number, number];
+				}),
+			};
 		});
 	}, [data.bounds, data.q]);
 	const railStops = useMemo(() => {
@@ -717,27 +720,75 @@ export const ChinaMap = forwardRef<ChinaMapHandle, Props>(function ChinaMap(
 		if (mode === "rail") {
 			ctx.lineJoin = "round";
 			ctx.lineCap = "round";
-			strokePolylines(railPaths, withAlpha(paperHex, .18 * (1 - fade * .4)), 2.6);
-			strokePolylines(railPaths, withAlpha(cinnabarHex, .9 * (1 - fade * .3)), 1.2);
-			const zoomed = viewRef.current.scale > fit.scale * 1.45;
+			const rings = focusedIdx != null ? data.provinces[focusedIdx]?.borders : undefined;
+			const inFocus = (line: [number, number][]) => {
+				if (!rings || fade < .18) return false;
+				const step = Math.max(1, Math.floor(line.length / 28));
+				for (let i = 0; i < line.length; i += step) {
+					const p = line[i];
+					if (!p) continue;
+					let inside = false;
+					for (const ring of rings) if (pointInRing(p[0], p[1], ring)) inside = !inside;
+					if (inside) return true;
+				}
+				return false;
+			};
+			const layers = [
+				railPaths.filter((c) => c.rank === "branch"),
+				railPaths.filter((c) => c.rank === "trunk"),
+			];
+			for (const group of layers) {
+				for (const c of group) {
+					const local = inFocus(c.line);
+					const trunk = c.rank === "trunk";
+					let alpha: number;
+					let width: number;
+					if (fade > .18 && rings) {
+						if (local) {
+							alpha = trunk ? .96 : .62;
+							width = trunk ? 2.15 : 1.35;
+						} else {
+							alpha = trunk ? .2 : .08;
+							width = trunk ? 1.05 : .75;
+						}
+					} else {
+						alpha = trunk ? .9 : .34;
+						width = trunk ? 1.35 : .9;
+					}
+					strokePolylines([c.line], withAlpha(paperHex, alpha * .2), width + 1.3);
+					strokePolylines([c.line], withAlpha(cinnabarHex, alpha), width);
+				}
+			}
+			const zoomed = fade > .18 || viewRef.current.scale > fit.scale * 1.45;
 			const placed: { x: number; y: number }[] = [];
 			ctx.textBaseline = "middle";
 			ctx.font = zoomed ? "500 12px \"Noto Serif SC\", serif" : "500 11px \"Noto Serif SC\", serif";
 			ctx.textAlign = "left";
-			for (const st of railStops) {
+			const stops = railStops.map((st) => {
+				let local = false;
+				if (rings && fade > .18) {
+					let inside = false;
+					for (const ring of rings) if (pointInRing(st.x, st.y, ring)) inside = !inside;
+					local = inside;
+				}
+				return { ...st, local };
+			}).sort((a, b) => Number(b.local) - Number(a.local));
+			for (const st of stops) {
 				const { sx, sy } = toS(st.x, st.y);
-				const a = 1 - fade * .28;
+				const a = st.local ? 1 : fade > .18 ? .28 : .92;
+				if (a < .12) continue;
 				ctx.beginPath();
 				ctx.fillStyle = withAlpha(cinnabarHex, a);
-				ctx.arc(sx, sy, zoomed ? 2.6 : 2.15, 0, Math.PI * 2);
+				ctx.arc(sx, sy, st.local ? 3 : zoomed ? 2.4 : 2.05, 0, Math.PI * 2);
 				ctx.fill();
 				ctx.beginPath();
 				ctx.strokeStyle = withAlpha(paperHex, a);
 				ctx.lineWidth = 1;
-				ctx.arc(sx, sy, zoomed ? 4 : 3.4, 0, Math.PI * 2);
+				ctx.arc(sx, sy, st.local ? 4.6 : zoomed ? 3.8 : 3.3, 0, Math.PI * 2);
 				ctx.stroke();
-				const minGap = zoomed ? 26 : 38;
+				const minGap = st.local ? 18 : zoomed ? 26 : 38;
 				if (placed.some((p) => Math.hypot(p.x - sx, p.y - sy) < minGap)) continue;
+				if (!st.local && fade > .18) continue;
 				placed.push({ x: sx, y: sy });
 				ctx.fillStyle = withAlpha(paperHex, a);
 				ctx.fillText(st.name, sx + 7, sy - 1);
