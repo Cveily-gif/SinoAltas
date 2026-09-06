@@ -7,6 +7,7 @@ import {
 import { AuthProvider } from "@/lib/auth/provider";
 import { PreviewHostBridge } from "@/components/preview-host-bridge";
 import { SiteShell } from "@/components/site-shell";
+import { useCopy } from "@/lib/locale";
 import appCss from "../styles.css?url";
 
 const APP_NAME = "华旅纪 Sino Atlas";
@@ -46,12 +47,13 @@ export const Route = createRootRoute({
 });
 
 function NotFound() {
+  const t = useCopy();
   return (
     <div className="flex min-h-[70svh] flex-col items-center justify-center px-6 pt-16 text-center">
-      <p className="font-display text-3xl">这一页还没有被写下</p>
-      <p className="mt-3 text-sm text-stone">也许路标被风吹走了。</p>
+      <p className="font-display text-3xl">{t.notFound}</p>
+      <p className="mt-3 text-sm text-stone">{t.notFoundSub}</p>
       <a href="/" className="mt-8 text-sm text-cinnabar">
-        回到华旅纪
+        {t.notFoundHome}
       </a>
     </div>
   );

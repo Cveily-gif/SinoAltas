@@ -10,6 +10,8 @@ import {
   regions,
 } from "@/data/destinations";
 import { journal } from "@/data/journal";
+import { destDisplayName, destKicker, locDest, locJournal } from "@/data/i18n/localize";
+import { useCopy, useLocale } from "@/lib/locale";
 
 export const Route = createFileRoute("/destinations/$slug")({
   loader: ({ params }) => {
@@ -22,21 +24,26 @@ export const Route = createFileRoute("/destinations/$slug")({
 });
 
 function DestinationMissing() {
+  const t = useCopy();
   return (
     <div className="flex min-h-svh flex-col items-center justify-center px-6 pt-16 text-center">
-      <p className="font-display text-2xl">这座山还没有被写下</p>
+      <p className="font-display text-2xl">{t.destMissing}</p>
       <Button asChild className="mt-6" variant="ink">
-        <Link to="/destinations">返回目的地</Link>
+        <Link to="/destinations">{t.destBack}</Link>
       </Button>
     </div>
   );
 }
 
 function DestinationPage() {
-  const { dest } = Route.useLoaderData();
+  const { dest: raw } = Route.useLoaderData();
+  const t = useCopy();
+  const { locale } = useLocale();
+  const dest = locDest(raw, locale);
   const region = regions.find((r) => r.id === dest.region);
   const related = relatedDestinations(dest.slug, 3);
-  const article = journal.find((a) => a.destination === dest.slug);
+  const articleRaw = journal.find((a) => a.destination === dest.slug);
+  const article = articleRaw ? locJournal(articleRaw, locale) : undefined;
 
   return (
     <article className="bg-paper">
@@ -57,13 +64,13 @@ function DestinationPage() {
             className="mb-8 inline-flex min-h-11 w-fit items-center gap-2 text-sm text-paper/75 hover:text-paper"
           >
             <ArrowLeft className="size-4" strokeWidth={1.6} />
-            目的地
+            {t.destBack}
           </Link>
           <p className="text-latin text-xs tracking-[0.32em] uppercase text-paper/70">
-            {dest.nameEn} · {dest.province}
+            {destKicker(raw, locale)} · {dest.province}
           </p>
           <h1 className="mt-3 font-display text-5xl tracking-wide sm:text-6xl md:text-7xl">
-            {dest.nameZh}
+            {destDisplayName(raw, locale)}
           </h1>
           <p className="mt-4 max-w-xl font-display text-xl text-paper/90 sm:text-2xl">
             {dest.tagline}
@@ -71,7 +78,7 @@ function DestinationPage() {
           <div className="mt-8 flex flex-wrap items-center gap-3">
             <SaveButton slug={dest.slug} tone="dark" />
             <span className="text-sm text-paper/70">
-              {dest.days} · 强度{dest.intensity}
+              {dest.days} · {t.intensityVal[raw.intensity] ?? dest.intensity}
             </span>
           </div>
         </div>
@@ -83,7 +90,7 @@ function DestinationPage() {
           <p className="mt-6 text-lg leading-relaxed text-ink/90">{dest.body}</p>
           {article ? (
             <p className="mt-8 text-sm text-stone">
-              延伸阅读：
+              {t.destFurther}
               <Link
                 to="/journal/$slug"
                 params={{ slug: article.slug }}
@@ -107,7 +114,7 @@ function DestinationPage() {
             {region ? (
               <div>
                 <dt className="text-xs tracking-[0.2em] uppercase text-stone">
-                  地带
+                  {t.destBelt}
                 </dt>
                 <dd className="mt-1 text-sm">
                   <Link
@@ -115,7 +122,7 @@ function DestinationPage() {
                     search={{ region: dest.region }}
                     className="text-cinnabar"
                   >
-                    {region.nameZh}
+                    {locale === "en" ? region.nameEn : region.nameZh}
                   </Link>
                 </dd>
               </div>
@@ -127,7 +134,7 @@ function DestinationPage() {
       <section className="border-y border-ink/8 bg-paper-deep/50">
         <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6">
           <SectionKicker index="02" label="Highlights" />
-          <h2 className="mt-3 font-display text-3xl">三处必看</h2>
+          <h2 className="mt-3 font-display text-3xl">{t.highlights}</h2>
           <div className="mt-10 grid gap-8 md:grid-cols-3">
             {dest.highlights.map((h, i) => (
               <div key={h.title} className="border-t border-ink/10 pt-5">
@@ -146,7 +153,7 @@ function DestinationPage() {
 
       <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6">
         <SectionKicker index="03" label="Itinerary" />
-        <h2 className="mt-3 font-display text-3xl">可以这样走</h2>
+        <h2 className="mt-3 font-display text-3xl">{t.skeleton}</h2>
         <ol className="mt-10 divide-y divide-ink/10 border-y border-ink/10">
           {dest.itinerary.map((item) => (
             <li
@@ -169,7 +176,7 @@ function DestinationPage() {
           <SaveButton slug={dest.slug} />
           <Button asChild variant="ink">
             <Link to="/planner">
-              去编排行程
+              {t.destGoTrip}
               <ArrowRight className="size-4" />
             </Link>
           </Button>
@@ -178,7 +185,7 @@ function DestinationPage() {
 
       <section className="bg-ink py-16 text-paper">
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
-          <h2 className="font-display text-2xl">顺路还可以去</h2>
+          <h2 className="font-display text-2xl">{t.related}</h2>
           <div className="mt-8 grid gap-3 md:grid-cols-3">
             {related.map((d) => (
               <DestinationCard key={d.slug} dest={d} size="compact" />

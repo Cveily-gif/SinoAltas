@@ -2,6 +2,10 @@ import { useEffect, useState } from "react";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { destinations, getDestination } from "@/data/destinations";
+import { copy } from "@/data/i18n/copy";
+import { locDest } from "@/data/i18n/localize";
+import { placeNameEn } from "@/data/i18n/places";
+import type { Locale } from "@/lib/locale";
 import type { RegionId } from "@/data/types";
 
 const REGION_ORDER: RegionId[] = [
@@ -16,6 +20,7 @@ export type DayPlan = {
   day: number;
   slug: string;
   nameZh: string;
+  name: string;
   title: string;
   note: string;
   transit?: boolean;
@@ -63,7 +68,11 @@ export function usePlannerHydration() {
   return ready;
 }
 
-export function composeItinerary(slugs: string[], totalDays: number): DayPlan[] {
+export function composeItinerary(
+  slugs: string[],
+  totalDays: number,
+  locale: Locale = "zh",
+): DayPlan[] {
   const dests = slugs
     .map((slug) => getDestination(slug))
     .filter((d): d is NonNullable<typeof d> => Boolean(d))
@@ -94,29 +103,38 @@ export function composeItinerary(slugs: string[], totalDays: number): DayPlan[] 
   const plan: DayPlan[] = [];
   let day = 1;
   dests.forEach((dest, index) => {
+    const view = locDest(dest, locale);
     const prev = dests[index - 1];
     if (index > 0 && prev && prev.region !== dest.region) {
+      const t = copy[locale];
+      const name = locale === "en" ? dest.nameEn : dest.nameZh;
       plan.push({
         day,
         slug: dest.slug,
         nameZh: dest.nameZh,
-        title: `转赴 ${dest.nameZh}`,
-        note: `从${prev.nameZh}前往${dest.province}。把这一日写松，把身体交给交通。`,
+        name,
+        title: t.plannerOnward(name),
+        note: t.plannerTransit(
+          locale === "en" ? prev.nameEn : prev.nameZh,
+          locale === "en" ? dest.nameEn : dest.nameZh,
+          locale === "en" ? placeNameEn(dest.province) : dest.province,
+        ),
         transit: true,
       });
       day += 1;
     }
     const stay = allotment[index] ?? 1;
     for (let i = 0; i < stay; i++) {
-      const piece = dest.itinerary[i];
+      const piece = view.itinerary[i];
+      const t = copy[locale];
+      const name = locale === "en" ? dest.nameEn : dest.nameZh;
       plan.push({
         day,
         slug: dest.slug,
         nameZh: dest.nameZh,
-        title: piece?.title ?? `${dest.nameZh} · 慢走`,
-        note:
-          piece?.text ??
-          `把这一日留给${dest.nameZh}没有写进攻略的角落，或补一场预约。`,
+        name,
+        title: piece?.title ?? t.plannerSlow(name),
+        note: piece?.text ?? t.plannerFallback(name),
       });
       day += 1;
     }

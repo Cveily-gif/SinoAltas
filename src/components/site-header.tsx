@@ -2,17 +2,9 @@ import { Link, useRouterState } from "@tanstack/react-router";
 import * as Dialog from "@radix-ui/react-dialog";
 import { Menu, X } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useCopy, useLocale } from "@/lib/locale";
 import { usePlanner, usePlannerHydration } from "@/lib/planner-store";
 import { cn } from "@/lib/utils";
-
-const NAV = [
-  { to: "/", label: "图幅", en: "Atlas" },
-  { to: "/destinations", label: "目的地", en: "Places" },
-  { to: "/experiences", label: "体验", en: "Craft" },
-  { to: "/seasons", label: "四季", en: "Seasons" },
-  { to: "/journal", label: "手记", en: "Journal" },
-  { to: "/planner", label: "行程", en: "Trip" },
-] as const;
 
 export function SiteHeader() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
@@ -20,12 +12,31 @@ export function SiteHeader() {
   const [open, setOpen] = useState(false);
   const savedCount = usePlanner((s) => s.saved.length);
   const hydrated = usePlannerHydration();
+  const t = useCopy();
+  const { locale, setLocale } = useLocale();
+  const dark = isHome;
 
   useEffect(() => {
     setOpen(false);
   }, [pathname]);
 
-  const dark = isHome;
+  const LangToggle = (
+    <button
+      type="button"
+      onClick={() => setLocale(locale === "zh" ? "en" : "zh")}
+      className={cn(
+        "inline-flex h-11 min-w-11 items-center justify-center gap-1 px-2 text-[11px] tracking-[0.18em]",
+        dark ? "text-paper/70 hover:text-paper" : "text-stone hover:text-ink",
+      )}
+      aria-label={locale === "zh" ? "Switch to English" : "切换为中文"}
+    >
+      <span className={locale === "zh" ? "text-cinnabar" : undefined}>中</span>
+      <span className="opacity-40">/</span>
+      <span className={cn("text-latin", locale === "en" ? "text-cinnabar" : undefined)}>
+        EN
+      </span>
+    </button>
+  );
 
   return (
     <header
@@ -42,23 +53,20 @@ export function SiteHeader() {
           isHome ? "max-w-none" : "max-w-7xl",
         )}
       >
-        <Link
-          to="/"
-          className="flex min-h-11 items-center gap-2.5"
-        >
-          <span className="font-display text-lg tracking-wide">华旅纪</span>
+        <Link to="/" className="flex min-h-11 items-center gap-2.5">
+          <span className="font-display text-lg tracking-wide">{t.brand}</span>
           <span
             className={cn(
               "text-latin text-[11px] tracking-[0.22em] uppercase",
               dark ? "text-paper/60" : "text-stone",
             )}
           >
-            Sino Atlas
+            {t.brandEn}
           </span>
         </Link>
 
         <nav className="hidden items-center gap-8 lg:flex">
-          {NAV.map((item) => {
+          {t.nav.map((item) => {
             const active =
               item.to === "/"
                 ? pathname === "/"
@@ -78,7 +86,7 @@ export function SiteHeader() {
                       : "text-stone hover:text-ink",
                 )}
               >
-                {item.label}
+                {locale === "en" ? item.en : item.zh}
                 {item.to === "/planner" && hydrated && savedCount > 0 ? (
                   <span className="inline-flex size-5 items-center justify-center rounded-full bg-cinnabar text-[10px] text-paper tabular-nums">
                     {savedCount}
@@ -92,13 +100,14 @@ export function SiteHeader() {
           })}
         </nav>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1">
+          <div className="hidden lg:block">{LangToggle}</div>
           <Dialog.Root open={open} onOpenChange={setOpen}>
             <Dialog.Trigger asChild>
               <button
                 type="button"
                 className="inline-flex size-11 items-center justify-center lg:hidden"
-                aria-label="打开菜单"
+                aria-label={t.menuOpen}
               >
                 <Menu className="size-5" strokeWidth={1.5} />
               </button>
@@ -108,28 +117,33 @@ export function SiteHeader() {
               <Dialog.Content className="fixed inset-y-0 right-0 z-50 flex w-[min(100%,20rem)] flex-col bg-paper text-ink shadow-border">
                 <div className="flex h-16 items-center justify-between px-4">
                   <Dialog.Title className="font-display text-lg">
-                    华旅纪
+                    {t.brand}
                   </Dialog.Title>
-                  <Dialog.Close asChild>
-                    <button
-                      type="button"
-                      className="inline-flex size-11 items-center justify-center"
-                      aria-label="关闭菜单"
-                    >
-                      <X className="size-5" strokeWidth={1.5} />
-                    </button>
-                  </Dialog.Close>
+                  <div className="flex items-center">
+                    {LangToggle}
+                    <Dialog.Close asChild>
+                      <button
+                        type="button"
+                        className="inline-flex size-11 items-center justify-center"
+                        aria-label={t.menuClose}
+                      >
+                        <X className="size-5" strokeWidth={1.5} />
+                      </button>
+                    </Dialog.Close>
+                  </div>
                 </div>
                 <nav className="flex flex-1 flex-col gap-1 px-4 pt-4">
-                  {NAV.map((item) => (
+                  {t.nav.map((item) => (
                     <Link
                       key={item.to}
                       to={item.to}
                       className="flex min-h-12 items-baseline justify-between border-b border-ink/8 py-3"
                     >
-                      <span className="font-display text-xl">{item.label}</span>
+                      <span className="font-display text-xl">
+                        {locale === "en" ? item.en : item.zh}
+                      </span>
                       <span className="flex items-center gap-2 text-latin text-xs tracking-[0.2em] uppercase text-stone">
-                        {item.en}
+                        {locale === "en" ? item.zh : item.en}
                         {item.to === "/planner" && hydrated && savedCount > 0
                           ? ` · ${savedCount}`
                           : ""}
@@ -138,7 +152,7 @@ export function SiteHeader() {
                   ))}
                 </nav>
                 <p className="px-4 py-6 text-xs tracking-wide text-stone">
-                  万里河山 · 一程烟火
+                  {locale === "en" ? t.sloganEn : t.slogan}
                 </p>
               </Dialog.Content>
             </Dialog.Portal>

@@ -10,7 +10,10 @@ import {
 import { destGeo } from "@/data/dest-geo";
 import { destinations } from "@/data/destinations";
 import { hsrCorridors, hsrStations } from "@/data/hsr-lines";
+import { locPlace, locProvinceName } from "@/data/i18n/localize";
+import { copy } from "@/data/i18n/copy";
 import { shortProvinceName, toQuantized } from "@/lib/geo";
+import type { Locale } from "@/lib/locale";
 import { cn } from "@/lib/utils";
 
 export type MapDots = {
@@ -74,6 +77,7 @@ type Props = {
   selectedSlug: string | null;
   saved: string[];
   mode?: AtlasMode;
+  locale?: Locale;
   onHoverProvince: (index: number | null) => void;
   onSelectProvince: (index: number | null) => void;
   onSelectDest: (slug: string | null) => void;
@@ -206,6 +210,7 @@ export const ChinaMap = forwardRef<ChinaMapHandle, Props>(function ChinaMap(
 		selectedSlug,
 		saved,
 		mode = "travel",
+		locale = "zh",
 		onHoverProvince,
 		onSelectProvince,
 		onSelectDest,
@@ -363,14 +368,14 @@ export const ChinaMap = forwardRef<ChinaMapHandle, Props>(function ChinaMap(
 			specs.push({
 				id,
 				index,
-				label: id === "81" ? "香港" : "澳门",
+				label: locPlace(id === "81" ? "香港" : "澳门", locale),
 				rings: prov.borders,
 				dots: [],
 				bb
 			});
 		}
 		return specs;
-	}, [data.provinces]);
+	}, [data.provinces, locale]);
 	const cityInteriors = useMemo(() => data.provinces.map((p) => {
 		if (!p.cities?.length || NO_CITY_SPLIT.has(p.id)) return [];
 		return cityInteriorLines(p.cities, p.borders);
@@ -815,7 +820,7 @@ export const ChinaMap = forwardRef<ChinaMapHandle, Props>(function ChinaMap(
 				}
 				placed.push({ x: sx, y: sy, w: tw });
 				ctx.fillStyle = withAlpha(paperHex, a);
-				ctx.fillText(st.name, sx + r + 5, sy - 1);
+				ctx.fillText(locPlace(st.name, locale), sx + r + 5, sy - 1);
 			}
 		} else {
 			const savedPins = pins.filter((p) => saved.includes(p.slug)).slice().sort((a, b) => destinations.findIndex((d) => d.slug === a.slug) - destinations.findIndex((d) => d.slug === b.slug));
@@ -858,7 +863,7 @@ export const ChinaMap = forwardRef<ChinaMapHandle, Props>(function ChinaMap(
 				ctx.stroke();
 				if (pin.slug === selectedSlug || pin.slug === hoverDest.current || active) {
 					ctx.fillStyle = withAlpha(paperHex, pinA);
-					ctx.fillText(pin.nameZh, sx + 9, sy - 1);
+					ctx.fillText(locale === "en" ? destinations.find((d) => d.slug === pin.slug)?.nameEn ?? pin.nameZh : pin.nameZh, sx + 9, sy - 1);
 				}
 			}
 		}
@@ -867,7 +872,7 @@ export const ChinaMap = forwardRef<ChinaMapHandle, Props>(function ChinaMap(
 			const prov = data.provinces[labelIndex];
 			if (prov) {
 				const { sx, sy } = toS(prov.cp[0], prov.cp[1]);
-				const name = shortProvinceName(prov.name);
+				const name = locProvinceName(prov.id, shortProvinceName(prov.name), locale);
 				ctx.font = "500 14px \"Noto Serif SC\", serif";
 				const tw = ctx.measureText(name).width;
 				ctx.fillStyle = withAlpha(inkHex, .78);
@@ -888,7 +893,7 @@ export const ChinaMap = forwardRef<ChinaMapHandle, Props>(function ChinaMap(
 				ctx.fillRect(sx - tw / 2 - 8, sy - 26, tw + 16, 22);
 				ctx.fillStyle = paper;
 				ctx.textAlign = "center";
-				ctx.fillText(city.name, sx, sy - 15);
+				ctx.fillText(locPlace(city.name, locale), sx, sy - 15);
 				ctx.textAlign = "left";
 			}
 		}
@@ -917,7 +922,7 @@ export const ChinaMap = forwardRef<ChinaMapHandle, Props>(function ChinaMap(
 			ctx.font = compact ? "500 9px \"Noto Serif SC\", serif" : "500 10px \"Noto Serif SC\", serif";
 			ctx.textAlign = "left";
 			ctx.fillStyle = withAlpha(paperHex, .42 * alpha);
-			ctx.fillText(compact ? "港澳" : "港澳附图 · 南海", x0, y0 - (compact ? 5 : 7));
+			ctx.fillText(compact ? copy[locale].hkMacaoShort : copy[locale].hkMacao, x0, y0 - (compact ? 5 : 7));
 			for (const box of boxes) {
 				const active = hoverIndex === box.index || selectedIndex === box.index;
 				ctx.beginPath();
@@ -982,6 +987,7 @@ export const ChinaMap = forwardRef<ChinaMapHandle, Props>(function ChinaMap(
 		railPaths,
 		railStops,
 		mode,
+		locale,
 		saved,
 		selectedIndex,
 		selectedSlug
@@ -1257,16 +1263,16 @@ export const ChinaMap = forwardRef<ChinaMapHandle, Props>(function ChinaMap(
 		scheduleDraw();
 	};
 	const hoverName = cityBadge
-		? cityBadge
+		? locPlace(cityBadge, locale)
 		: hoverIndex != null
-			? shortProvinceName(data.provinces[hoverIndex]?.name ?? "")
+			? locProvinceName(data.provinces[hoverIndex]?.id ?? "", shortProvinceName(data.provinces[hoverIndex]?.name ?? ""), locale)
 			: "";
 
 	return (
 		<div
 			ref={wrapRef}
 			role="application"
-			aria-label="中国旅游图幅。点省份进入，点朱砂打开城市，滚轮缩放，点海面返回全国。"
+			aria-label={copy[locale].mapAria}
 			className={cn("relative h-full min-h-[52svh] w-full touch-none overflow-hidden bg-ink select-none lg:min-h-0")}
 			style={{ cursor }}
 			onPointerDown={onPointerDown}

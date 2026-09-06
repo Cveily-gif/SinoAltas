@@ -6,6 +6,8 @@ import { DestinationCard } from "@/components/destination-card";
 import { SectionKicker } from "@/components/section-kicker";
 import { destinations, regions, seasons } from "@/data/destinations";
 import type { RegionId, SeasonId } from "@/data/types";
+import { locDest } from "@/data/i18n/localize";
+import { useCopy, useLocale } from "@/lib/locale";
 import { cn } from "@/lib/utils";
 
 const searchSchema = z.object({
@@ -24,21 +26,25 @@ function DestinationsPage() {
   const { region, season } = Route.useSearch();
   const navigate = Route.useNavigate();
   const [q, setQ] = useState("");
+  const t = useCopy();
+  const { locale } = useLocale();
 
   const list = useMemo(() => {
     const query = q.trim().toLowerCase();
-    return destinations.filter((d) => {
-      if (region && d.region !== region) return false;
-      if (season && !d.seasons.includes(season)) return false;
+    return destinations.filter((raw) => {
+      const d = locDest(raw, locale);
+      if (region && raw.region !== region) return false;
+      if (season && !raw.seasons.includes(season)) return false;
       if (!query) return true;
       return (
-        d.nameZh.includes(query) ||
-        d.nameEn.toLowerCase().includes(query) ||
-        d.province.includes(query) ||
-        d.tagline.includes(query)
+        raw.nameZh.includes(query) ||
+        raw.nameEn.toLowerCase().includes(query) ||
+        d.province.toLowerCase().includes(query) ||
+        d.tagline.toLowerCase().includes(query) ||
+        raw.province.includes(query)
       );
     });
-  }, [q, region, season]);
+  }, [q, region, season, locale]);
 
   function setRegion(id?: RegionId) {
     void navigate({
@@ -63,9 +69,9 @@ function DestinationsPage() {
             label="Destinations"
             className="text-stone-light"
           />
-          <h1 className="mt-4 font-display text-4xl sm:text-5xl">目的地</h1>
+          <h1 className="mt-4 font-display text-4xl sm:text-5xl">{t.destTitle}</h1>
           <p className="mt-4 max-w-xl text-sm leading-relaxed text-stone-light">
-            二十二座被认真写下的城市。从华北的都城到青藏的光，按地理、按季节，或按你此刻想起的那个字。
+            {t.destLead}
           </p>
         </div>
       </section>
@@ -73,7 +79,7 @@ function DestinationsPage() {
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
         <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
           <label className="relative block w-full max-w-md">
-            <span className="sr-only">搜索目的地</span>
+            <span className="sr-only">{t.destSearch}</span>
             <Search
               className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-stone"
               strokeWidth={1.6}
@@ -81,12 +87,12 @@ function DestinationsPage() {
             <input
               value={q}
               onChange={(e) => setQ(e.target.value)}
-              placeholder="搜索名字、省份或一句印象"
+              placeholder={t.destSearchPh}
               className="h-12 w-full rounded-lg border border-ink/12 bg-paper pl-10 pr-4 text-sm text-ink placeholder:text-stone focus:outline-2 focus:outline-offset-2 focus:outline-cinnabar"
             />
           </label>
           <p className="text-sm text-stone">
-            {list.length} 处风景
+            {t.destCount(list.length)}
           </p>
         </div>
 
@@ -94,14 +100,14 @@ function DestinationsPage() {
           <FilterChip
             active={!region}
             onClick={() => setRegion(undefined)}
-            label="全部地带"
+            label={t.destAllBelts}
           />
           {regions.map((r) => (
             <FilterChip
               key={r.id}
               active={region === r.id}
               onClick={() => setRegion(r.id)}
-              label={r.nameZh}
+              label={locale === "en" ? r.nameEn : r.nameZh}
             />
           ))}
         </div>
@@ -109,21 +115,21 @@ function DestinationsPage() {
           <FilterChip
             active={!season}
             onClick={() => setSeason(undefined)}
-            label="全部季节"
+            label={t.destAllSeasons}
           />
           {seasons.map((s) => (
             <FilterChip
               key={s.id}
               active={season === s.id}
               onClick={() => setSeason(s.id)}
-              label={s.nameZh}
+              label={locale === "en" ? s.nameEn : s.nameZh}
             />
           ))}
         </div>
 
         {list.length === 0 ? (
           <p className="py-24 text-center text-stone">
-            没有相符的目的地。换一个字，或
+            {t.destEmpty}{" "}
             <button
               type="button"
               className="mx-1 text-cinnabar underline-offset-4 hover:underline"
@@ -132,9 +138,9 @@ function DestinationsPage() {
                 void navigate({ search: {}, replace: true });
               }}
             >
-              清除筛选
+              {t.destClear}
             </button>
-            。
+            {locale === "en" ? "." : "。"}
           </p>
         ) : (
           <div className="mt-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -149,9 +155,9 @@ function DestinationsPage() {
         )}
 
         <p className="mt-12 text-center text-sm text-stone">
-          想把它们排成一条路？
+          {t.destWantRoad}
           <Link to="/planner" className="ml-1 text-cinnabar">
-            去编排行程
+            {t.destGoTrip}
           </Link>
         </p>
       </div>

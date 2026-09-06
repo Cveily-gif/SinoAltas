@@ -1,5 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import type { Destination } from "@/data/types";
+import { destDisplayName, destKicker, locDest } from "@/data/i18n/localize";
+import { useLocale } from "@/lib/locale";
 import { cn } from "@/lib/utils";
 
 export function DestinationCard({
@@ -12,6 +14,8 @@ export function DestinationCard({
   size?: "regular" | "feature" | "compact";
 }) {
   const tall = size === "feature";
+  const { locale } = useLocale();
+  const d = locDest(dest, locale);
 
   return (
     <Link
@@ -35,7 +39,7 @@ export function DestinationCard({
       <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/25 to-transparent" />
       <div className="absolute inset-x-0 bottom-0 flex flex-col gap-2 p-5 sm:p-6">
         <div className="flex items-center justify-between gap-3 text-[11px] tracking-[0.22em] uppercase text-paper/70">
-          <span className="text-latin">{dest.nameEn}</span>
+          <span className={locale === "en" ? undefined : "text-latin"}>{destKicker(dest, locale)}</span>
           {index ? (
             <span className="text-latin tabular-nums">{index}</span>
           ) : null}
@@ -46,10 +50,10 @@ export function DestinationCard({
             tall ? "text-3xl sm:text-4xl" : "text-2xl",
           )}
         >
-          {dest.nameZh}
+          {destDisplayName(dest, locale)}
         </h3>
         <p className="max-w-md text-sm leading-relaxed text-paper/80">
-          {dest.tagline}
+          {d.tagline}
         </p>
       </div>
     </Link>

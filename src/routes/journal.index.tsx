@@ -1,22 +1,27 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { SectionKicker } from "@/components/section-kicker";
 import { journal } from "@/data/journal";
+import { locJournal } from "@/data/i18n/localize";
+import { useCopy, useLocale } from "@/lib/locale";
 
 export const Route = createFileRoute("/journal/")({
   component: JournalPage,
 });
 
 function JournalPage() {
-  const [lead, ...rest] = journal;
+  const t = useCopy();
+  const { locale } = useLocale();
+  const localized = journal.map((a) => locJournal(a, locale));
+  const [lead, ...rest] = localized;
 
   return (
     <div className="pt-16 sm:pt-[4.5rem]">
       <section className="border-b border-ink/8">
         <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 md:py-20">
           <SectionKicker index="05" label="Journal" />
-          <h1 className="mt-4 font-display text-4xl sm:text-5xl">手记</h1>
+          <h1 className="mt-4 font-display text-4xl sm:text-5xl">{t.journalTitle}</h1>
           <p className="mt-4 max-w-xl text-sm leading-relaxed text-stone">
-            比攻略更慢的写法。关于云海、一碗面、一条江，和风把时间吹薄的西部。
+            {t.journalLead}
           </p>
         </div>
       </section>

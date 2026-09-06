@@ -9,6 +9,7 @@ import {
 import { DashboardPanel } from "@/components/dashboard-panel";
 import { destGeo } from "@/data/dest-geo";
 import { loadMapDots } from "@/lib/map-dots";
+import { useCopy, useLocale } from "@/lib/locale";
 import { usePlanner, usePlannerHydration } from "@/lib/planner-store";
 
 export const Route = createFileRoute("/")({
@@ -37,6 +38,8 @@ function Home() {
   const mapRef = useRef<ChinaMapHandle>(null);
   const saved = usePlanner((s) => s.saved);
   const ready = usePlannerHydration();
+  const t = useCopy();
+  const { locale } = useLocale();
 
   useEffect(() => {
     let alive = true;
@@ -106,11 +109,12 @@ function Home() {
               onSelectProvince={onSelectProvince}
               onSelectDest={onSelectDest}
               mode={mode}
+              locale={locale}
             />
           ) : (
             <div className="flex h-full min-h-[52svh] flex-col items-center justify-center gap-3 bg-ink">
               <p className="text-sm tracking-[0.28em] text-paper/45">
-                {mapError ? "图幅未能载入" : "图幅载入中"}
+                {mapError ? t.mapError : t.mapLoading}
               </p>
               {mapError ? (
                 <button
@@ -123,7 +127,7 @@ function Home() {
                       .catch(() => setMapError(true));
                   }}
                 >
-                  重试
+                  {t.retry}
                 </button>
               ) : null}
             </div>
@@ -131,8 +135,8 @@ function Home() {
           <div className="pointer-events-none absolute inset-x-0 top-0 h-16 bg-gradient-to-b from-ink/40 to-transparent" />
           <div className="absolute bottom-4 left-4 z-10 flex rounded-md border border-paper/15 bg-ink/80 p-0.5 backdrop-blur-sm">
             {([
-              { id: "travel" as const, label: "游历" },
-              { id: "rail" as const, label: "高铁" },
+              { id: "travel" as const, label: t.travel },
+              { id: "rail" as const, label: t.rail },
             ]).map((opt) => (
               <button
                 key={opt.id}

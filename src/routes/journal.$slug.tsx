@@ -4,6 +4,8 @@ import { SaveButton } from "@/components/save-button";
 import { Button } from "@/components/ui/button";
 import { getDestination } from "@/data/destinations";
 import { getArticle, journal } from "@/data/journal";
+import { destDisplayName, locJournal } from "@/data/i18n/localize";
+import { useCopy, useLocale } from "@/lib/locale";
 
 export const Route = createFileRoute("/journal/$slug")({
   loader: ({ params }) => {
@@ -16,22 +18,29 @@ export const Route = createFileRoute("/journal/$slug")({
 });
 
 function Missing() {
+  const t = useCopy();
   return (
     <div className="flex min-h-svh flex-col items-center justify-center px-6 pt-16 text-center">
-      <p className="font-display text-2xl">这篇手记还没有写完</p>
+      <p className="font-display text-2xl">{t.journalMissing}</p>
       <Button asChild className="mt-6" variant="ink">
-        <Link to="/journal">返回手记</Link>
+        <Link to="/journal">{t.journalBack}</Link>
       </Button>
     </div>
   );
 }
 
 function ArticlePage() {
-  const { article } = Route.useLoaderData();
+  const { article: raw } = Route.useLoaderData();
+  const t = useCopy();
+  const { locale } = useLocale();
+  const article = locJournal(raw, locale);
   const dest = article.destination
     ? getDestination(article.destination)
     : undefined;
-  const more = journal.filter((a) => a.slug !== article.slug).slice(0, 2);
+  const more = journal
+    .filter((a) => a.slug !== article.slug)
+    .slice(0, 2)
+    .map((a) => locJournal(a, locale));
 
   return (
     <article className="pt-16 sm:pt-[4.5rem]">
@@ -41,7 +50,7 @@ function ArticlePage() {
           className="inline-flex min-h-11 items-center gap-2 text-sm text-stone hover:text-ink"
         >
           <ArrowLeft className="size-4" strokeWidth={1.6} />
-          手记
+          {t.journalBack}
         </Link>
         <p className="mt-8 text-xs tracking-[0.24em] uppercase text-stone">
           {article.kicker} · {article.date} · {article.read}
@@ -77,14 +86,14 @@ function ArticlePage() {
           <div className="mt-12 flex flex-wrap items-center justify-between gap-4 border-t border-ink/10 pt-8">
             <div>
               <p className="text-xs tracking-[0.2em] uppercase text-stone">
-                文中的地方
+                {t.journalPlace}
               </p>
               <Link
                 to="/destinations/$slug"
                 params={{ slug: dest.slug }}
                 className="mt-1 inline-block font-display text-2xl hover:text-cinnabar"
               >
-                {dest.nameZh}
+                {destDisplayName(dest, locale)}
               </Link>
             </div>
             <SaveButton slug={dest.slug} />
@@ -103,7 +112,7 @@ function ArticlePage() {
                 className="group"
               >
                 <p className="text-xs tracking-[0.2em] uppercase text-stone">
-                  继续读
+                  {t.journalContinue}
                 </p>
                 <h2 className="mt-2 font-display text-2xl group-hover:text-cinnabar">
                   {a.title}

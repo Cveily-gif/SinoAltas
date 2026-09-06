@@ -2,11 +2,14 @@ import type { ReactNode } from "react";
 import { useRouterState } from "@tanstack/react-router";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
+import { useLocaleHydration, useLocaleSync } from "@/lib/locale";
 import { cn } from "@/lib/utils";
 
 export function SiteShell({ children }: { children: ReactNode }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const isHome = pathname === "/";
+  useLocaleHydration();
+  useLocaleSync();
 
   return (
     <div

@@ -2,26 +2,32 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { SectionKicker } from "@/components/section-kicker";
 import { getDestination } from "@/data/destinations";
 import { experiences } from "@/data/experiences";
+import { destDisplayName, locExperience } from "@/data/i18n/localize";
+import { useCopy, useLocale } from "@/lib/locale";
 
 export const Route = createFileRoute("/experiences")({
   component: ExperiencesPage,
 });
 
 function ExperiencesPage() {
+  const t = useCopy();
+  const { locale } = useLocale();
   return (
     <div className="pt-16 sm:pt-[4.5rem]">
       <section className="border-b border-ink/8">
         <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 md:py-20">
           <SectionKicker index="06" label="Craft" />
-          <h1 className="mt-4 font-display text-4xl sm:text-5xl">体验</h1>
+          <h1 className="mt-4 font-display text-4xl sm:text-5xl">{t.expTitle}</h1>
           <p className="mt-4 max-w-xl text-sm leading-relaxed text-stone">
-            风景之外，中国还有可以被喝、被吃、被写、被走进去的部分。
+            {t.expLead}
           </p>
         </div>
       </section>
 
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
-        {experiences.map((e, i) => (
+        {experiences.map((raw, i) => {
+          const e = locExperience(raw, locale);
+          return (
           <article
             key={e.slug}
             id={e.slug}
@@ -36,7 +42,7 @@ function ExperiencesPage() {
             >
               <img
                 src={e.image}
-                alt={e.nameZh}
+                alt={locale === "en" ? e.nameEn : e.nameZh}
                 width={1280}
                 height={960}
                 loading="lazy"
@@ -49,7 +55,7 @@ function ExperiencesPage() {
                 {String(i + 1).padStart(2, "0")} / {e.nameEn}
               </p>
               <h2 className="mt-3 font-display text-3xl sm:text-4xl">
-                {e.nameZh}
+                {locale === "en" ? e.nameEn : e.nameZh}
               </h2>
               <p className="mt-3 font-display text-lg text-ink/80">
                 {e.excerpt}
@@ -68,14 +74,15 @@ function ExperiencesPage() {
                       params={{ slug }}
                       className="inline-flex h-10 items-center rounded-full bg-paper-deep px-4 text-sm hover:bg-ink hover:text-paper"
                     >
-                      {d.nameZh}
+                      {destDisplayName(d, locale)}
                     </Link>
                   );
                 })}
               </div>
             </div>
           </article>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
