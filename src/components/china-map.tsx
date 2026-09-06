@@ -902,6 +902,18 @@ export const ChinaMap = forwardRef<ChinaMapHandle, Props>(function ChinaMap(
 		draw();
 	}, [draw]);
 	useEffect(() => {
+		let frames = 0;
+		let id = 0;
+		const tick = () => {
+			drawRef.current();
+			const wrap = wrapRef.current;
+			frames += 1;
+			if (wrap && wrap.clientWidth < 8 && frames < 90) id = requestAnimationFrame(tick);
+		};
+		id = requestAnimationFrame(tick);
+		return () => cancelAnimationFrame(id);
+	}, []);
+	useEffect(() => {
 		const wrap = wrapRef.current;
 		if (!wrap) return;
 		const onWheel = (e: WheelEvent) => {
@@ -1113,7 +1125,7 @@ export const ChinaMap = forwardRef<ChinaMapHandle, Props>(function ChinaMap(
 			ref={wrapRef}
 			role="application"
 			aria-label="中国旅游点阵图幅。滚轮缩放，点选省份或目的地。"
-			className={cn("relative h-full w-full touch-none overflow-hidden bg-ink select-none")}
+			className={cn("relative h-full min-h-[52svh] w-full touch-none overflow-hidden bg-ink select-none lg:min-h-0")}
 			style={{ cursor }}
 			onPointerDown={onPointerDown}
 			onPointerMove={onPointerMove}

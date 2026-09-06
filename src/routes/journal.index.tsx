@@ -31,6 +31,10 @@ function JournalPage() {
             <img
               src={lead.image}
               alt={lead.title}
+              width={1280}
+              height={720}
+              fetchPriority="high"
+              decoding="async"
               className="absolute inset-0 size-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
             />
           </div>
@@ -60,6 +64,10 @@ function JournalPage() {
               <img
                 src={article.image}
                 alt={article.title}
+                width={1280}
+                height={720}
+                loading="lazy"
+                decoding="async"
                 className="aspect-16/10 w-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
               />
             </div>

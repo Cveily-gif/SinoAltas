@@ -63,7 +63,7 @@ export function SiteFooter() {
               记
             </p>
             <p className="mt-4 text-sm leading-relaxed text-stone-light">
-              华旅纪是一份独立编辑的旅行志。收录十二处风景，四时，与可以放进行李的行程。
+              华旅纪是一份独立编辑的旅行志。收录二十二座城市，四时，与可以放进行李的行程。
             </p>
           </div>
         </div>

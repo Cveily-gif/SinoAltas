@@ -15,7 +15,7 @@ export const experiences: Experience[] = [
     nameZh: "川味",
     nameEn: "Sichuan",
     image: "/images/sichuan.jpg",
-    related: ["jiuzhaigou"],
+    related: ["chengdu", "chongqing"],
     excerpt: "花椒不是辣，是一种让舌头睁开的麻。",
     body: "去四川，先承认自己会被红油说服。火锅是社交，冒菜是一个人的火锅，担担面是可以走在路上的记忆。九寨归来经过成都，把一天交给宽窄巷子之外的苍蝇馆子：蒜泥白肉、红油抄手、一碗冰粉。辣只是入口，回甘才是目的。",
   },

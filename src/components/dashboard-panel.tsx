@@ -52,6 +52,10 @@ function DestRow({
       <img
         src={dest.image}
         alt=""
+        width={44}
+        height={44}
+        loading="lazy"
+        decoding="async"
         className="size-11 shrink-0 rounded-sm object-cover"
       />
       <span className="min-w-0 flex-1">
@@ -144,6 +148,9 @@ export function DashboardPanel({
               <img
                 src={dest.image}
                 alt={dest.nameZh}
+                width={640}
+                height={400}
+                decoding="async"
                 className="aspect-16/10 w-full object-cover"
               />
             </div>
@@ -252,7 +259,7 @@ export function DashboardPanel({
             <div className="mt-5 grid grid-cols-3 gap-3 border-y border-paper/10 py-4">
               {[
                 { n: "34", l: "省区" },
-                { n: "12", l: "目的地" },
+                { n: "22", l: "城市" },
                 { n: "5", l: "地理带" },
               ].map((s) => (
                 <div key={s.l}>
@@ -282,7 +289,7 @@ export function DashboardPanel({
               ))}
             </div>
             <p className="mt-6 text-xs tracking-[0.2em] uppercase text-stone-light">
-              十二处
+              二十二座
             </p>
             <ul className="mt-2 space-y-1">
               {destinations.map((d, i) => (

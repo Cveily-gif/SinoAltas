@@ -44,6 +44,10 @@ function DestinationPage() {
         <img
           src={dest.image}
           alt={`${dest.nameZh} ${dest.nameEn}`}
+          width={1280}
+          height={720}
+          fetchPriority="high"
+          decoding="async"
           className="absolute inset-0 size-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/40 to-ink/20" />

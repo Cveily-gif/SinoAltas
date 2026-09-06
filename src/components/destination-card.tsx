@@ -26,6 +26,10 @@ export function DestinationCard({
       <img
         src={dest.image}
         alt={`${dest.nameZh} ${dest.nameEn}`}
+        width={1280}
+        height={720}
+        loading="lazy"
+        decoding="async"
         className="absolute inset-0 size-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
       />
       <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/25 to-transparent" />

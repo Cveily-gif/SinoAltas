@@ -37,6 +37,10 @@ function ExperiencesPage() {
               <img
                 src={e.image}
                 alt={e.nameZh}
+                width={1280}
+                height={960}
+                loading="lazy"
+                decoding="async"
                 className="aspect-4/3 w-full object-cover"
               />
             </div>

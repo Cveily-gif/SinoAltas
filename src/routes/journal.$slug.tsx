@@ -58,6 +58,10 @@ function ArticlePage() {
         <img
           src={article.image}
           alt={article.title}
+          width={1280}
+          height={720}
+          fetchPriority="high"
+          decoding="async"
           className="aspect-16/9 w-full object-cover"
         />
       </div>

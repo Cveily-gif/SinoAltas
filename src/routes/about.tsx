@@ -13,6 +13,10 @@ function AboutPage() {
         <img
           src="/images/calligraphy.jpg"
           alt="笔墨"
+          width={1280}
+          height={800}
+          fetchPriority="high"
+          decoding="async"
           className="absolute inset-0 size-full object-cover opacity-70"
         />
         <div className="absolute inset-0 bg-ink/55" />
@@ -28,7 +32,7 @@ function AboutPage() {
 
       <section className="mx-auto max-w-2xl px-4 py-16 sm:px-6">
         <p className="font-display text-2xl leading-snug">
-          华旅纪是一份独立编辑的中国旅行志。它不试图穷尽，只认真写下十二处风景。
+          华旅纪是一份独立编辑的中国旅行志。它不试图穷尽，只认真写下二十二座城市。
         </p>
         <p className="mt-6 text-sm leading-relaxed text-stone">
           我们相信旅行的密度来自限制：季节要对，地带要连得上，日程要留出迷路的余地。每一处目的地都附有可走的三日骨架、必看的三处，以及一句不愿被扩音器说完的印象。

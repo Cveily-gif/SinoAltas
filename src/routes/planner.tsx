@@ -62,6 +62,10 @@ function PlannerPage() {
                     <img
                       src={d.image}
                       alt=""
+                      width={56}
+                      height={56}
+                      loading="lazy"
+                      decoding="async"
                       className="size-14 shrink-0 rounded-md object-cover"
                     />
                     <span className="min-w-0 flex-1">

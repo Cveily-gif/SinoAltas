@@ -65,7 +65,7 @@ function DestinationsPage() {
           />
           <h1 className="mt-4 font-display text-4xl sm:text-5xl">目的地</h1>
           <p className="mt-4 max-w-xl text-sm leading-relaxed text-stone-light">
-            十二处被认真写下的风景。从华北的城墙到青藏的光，按地理、按季节，或按你此刻想起的那个字。
+            二十二座被认真写下的城市。从华北的都城到青藏的光，按地理、按季节，或按你此刻想起的那个字。
           </p>
         </div>
       </section>

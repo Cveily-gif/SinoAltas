@@ -2,61 +2,580 @@ import type { Destination, RegionId, SeasonId } from "./types";
 
 export const destinations: Destination[] = [
   {
-    slug: "zhangjiajie",
-    nameZh: "张家界",
-    nameEn: "Zhangjiajie",
-    province: "湖南",
+    slug: "beijing",
+    nameZh: "北京",
+    nameEn: "Beijing",
+    province: "北京",
+    region: "north",
+    seasons: ["autumn", "winter", "spring"],
+    days: "4–6 日",
+    intensity: "中",
+    featured: true,
+    tagline: "把一座都城走成一条中轴线",
+    excerpt:
+      "胡同、城墙、一碗炸酱面。北京不是宫殿的集合，是一套还在运转的城市礼仪。",
+    body: "去北京，先把脚步放在中轴线上：从永定门想到钟鼓楼，城是被一条看不见的线组织起来的。胡同比殿宇更接近日常——烟袋斜街之外，还有没有被扩音器占领的院子。冬天的风把声音削薄，秋天的银杏把地铺成铜。夜市、京剧、一盘烤鸭，都是这座城把自己翻译成胃与耳朵的方式。不必把日程写成打卡清单，给一条胡同留出迷路的下午。",
+    image: "/images/beijing.jpg",
+    highlights: [
+      {
+        title: "中轴与城",
+        text: "永定门到钟鼓楼，把都城的骨架走一遍，比任何讲解更清楚。",
+      },
+      {
+        title: "胡同",
+        text: "南锣与烟袋之外，找一条没有招牌的巷子坐下来。",
+      },
+      {
+        title: "城北的山",
+        text: "香山或八大处，把平原上的都城放回燕山的褶皱里。",
+      }
+    ],
+    itinerary: [
+      {
+        day: "第一日",
+        title: "中轴",
+        text: "前门、天安门广场一带入城，午后转胡同，傍晚景山看城的屋顶。",
+      },
+      {
+        day: "第二日",
+        title: "城与胃",
+        text: "上午走一条老街区，下午交给炸酱面或烤鸭，夜听一出戏。",
+      },
+      {
+        day: "第三日",
+        title: "出城一线",
+        text: "香山、颐和园或城北的一处山，把北京从平原里拎起来。",
+      }
+    ],
+    practical: [
+      { label: "最佳季节", value: "十月银杏，或雪后的干冷" },
+      { label: "如何抵达", value: "首都 / 大兴机场，地铁几乎能到所有城内目的地" },
+      { label: "建议停留", value: "四日才刚够把中轴和胡同都走松" },
+      { label: "节奏", value: "周中出门，给一条没有攻略的巷子留半天" }
+    ],
+  },
+  {
+    slug: "shanghai",
+    nameZh: "上海",
+    nameEn: "Shanghai",
+    province: "上海",
+    region: "jiangnan",
+    seasons: ["spring", "autumn", "winter"],
+    days: "3–5 日",
+    intensity: "轻",
+    featured: true,
+    tagline: "外滩把二十世纪摊开",
+    excerpt:
+      "石库门、黄浦江、通宵的面。上海是中国进入现代的切口，夜比昼更像它自己。",
+    body: "上海要被走，而不是被远眺。外滩的石材与对岸的玻璃是同一条河的两页。武康路与愚园路把梧桐写成一种生活，而不是打卡背景。早餐从生煎开始，夜里一碗阳春面把城市的速度降下来。去上海，把一天交给一条可以走完的马路，比把三天交给三座塔更接近这座城。",
+    image: "/images/shanghai.jpg",
+    highlights: [
+      {
+        title: "外滩与浦江",
+        text: "晨或夜，船把两岸的时间差送到眼前。",
+      },
+      {
+        title: "梧桐区",
+        text: "武康、安福、愚园，把租界的尺度走成散步。",
+      },
+      {
+        title: "小馆",
+        text: "本帮菜不必豪华。一条马路里的生煎，往往更准确。",
+      }
+    ],
+    itinerary: [
+      {
+        day: "第一日",
+        title: "浦江",
+        text: "清晨外滩，午后豫园一带的城厢，夜里再看一次灯。",
+      },
+      {
+        day: "第二日",
+        title: "西区",
+        text: "武康路到愚园路，咖啡馆与旧公寓之间找一家本帮小馆。",
+      },
+      {
+        day: "第三日",
+        title: "另一面",
+        text: "张园或沿苏州河走一段，把上海从天际线里放回河里。",
+      }
+    ],
+    practical: [
+      { label: "最佳季节", value: "四至五月，或十月干爽" },
+      { label: "如何抵达", value: "虹桥 / 浦东，地铁是这座城的语法" },
+      { label: "建议停留", value: "三日够骨架，五日才有闲" },
+      { label: "节奏", value: "少排队网红店，多走没有滤镜的马路" }
+    ],
+  },
+  {
+    slug: "hangzhou",
+    nameZh: "杭州",
+    nameEn: "Hangzhou",
+    province: "浙江",
+    region: "jiangnan",
+    seasons: ["spring", "autumn"],
+    days: "3–4 日",
+    intensity: "轻",
+    featured: true,
+    tagline: "一座把湖当成市政的城",
+    excerpt:
+      "西湖被写了千年。杭州真正动人的是：湖在城里，茶在山里，人可以走着抵达。",
+    body: "杭州不是湖的附属，湖是杭州的呼吸。清晨白堤还没有被打开，柳丝贴着水。龙井的茶室在山里，灵隐的香在谷中。南宋御街与象山把宋的审美接到可以买一杯咖啡的现在。去杭州，把日程写松：湖要早，茶要坐，城里要留一夜。",
+    image: "/images/hangzhou.jpg",
+    highlights: [
+      {
+        title: "环湖",
+        text: "苏堤与杨公堤把湖分成可以慢慢读的句子。",
+      },
+      {
+        title: "龙井",
+        text: "狮峰一带坐下来，比买茶更重要。",
+      },
+      {
+        title: "城里",
+        text: "南宋御街或象山，作为湖之外的杭州。",
+      }
+    ],
+    itinerary: [
+      {
+        day: "第一日",
+        title: "湖",
+        text: "清晨白堤至断桥，沿苏堤向南，傍晚湖滨看灯。",
+      },
+      {
+        day: "第二日",
+        title: "山与茶",
+        text: "上午灵隐，下午龙井村，把一盏茶喝到见杯底。",
+      },
+      {
+        day: "第三日",
+        title: "城",
+        text: "城里走走市井与书院，把杭州从明信片里领回来。",
+      }
+    ],
+    practical: [
+      { label: "最佳季节", value: "三月至四月，或十月桂花" },
+      { label: "如何抵达", value: "杭州东站 / 萧山机场" },
+      { label: "建议停留", value: "两日够湖，三日才有茶与城" },
+      { label: "节奏", value: "七点前到湖，把拥挤留给别人" }
+    ],
+  },
+  {
+    slug: "suzhou",
+    nameZh: "苏州",
+    nameEn: "Suzhou",
+    province: "江苏",
+    region: "jiangnan",
+    seasons: ["spring", "autumn"],
+    days: "2–4 日",
+    intensity: "轻",
+    tagline: "把一座山放进一亩池塘",
+    excerpt:
+      "园、水、评弹。苏州把观看练成一种可以坐下的技术。",
+    body: "苏州不是园的目录。它是一条被运河反复折叠的城：评弹在茶馆里把声音放慢，巷子把脚底板走潮。拙政、留园之外，还有没有被讲解词写完的小园。去苏州，选两座园，再把一天交给平江路之外的水巷。",
+    image: "/images/suzhou.jpg",
+    highlights: [
+      {
+        title: "园",
+        text: "一座大园加一座小园，漏窗比门票更值得被记住。",
+      },
+      {
+        title: "水巷",
+        text: "平江路之外还有更安静的河。",
+      },
+      {
+        title: "评弹",
+        text: "下午的茶馆，把苏州从眼睛还给耳朵。",
+      }
+    ],
+    itinerary: [
+      {
+        day: "第一日",
+        title: "园与巷",
+        text: "上午一座园，下午平江或山塘，夜听一曲。",
+      },
+      {
+        day: "第二日",
+        title: "另一座园",
+        text: "换一座更安静的园，把观看的速度降到廊的转折。",
+      },
+      {
+        day: "第三日",
+        title: "出城",
+        text: "同里或周庄若去，早去早回，把夜留给苏州城里。",
+      }
+    ],
+    practical: [
+      { label: "最佳季节", value: "四月杜鹃，或十月干爽" },
+      { label: "如何抵达", value: "高铁苏州站，距上海约半小时" },
+      { label: "建议停留", value: "两日园与城，三日才不赶" },
+      { label: "节奏", value: "开园即入，避开周末游线" }
+    ],
+  },
+  {
+    slug: "nanjing",
+    nameZh: "南京",
+    nameEn: "Nanjing",
+    province: "江苏",
+    region: "jiangnan",
+    seasons: ["spring", "autumn"],
+    days: "3–4 日",
+    intensity: "中",
+    tagline: "城墙还在把六朝围住",
+    excerpt:
+      "梧桐、城砖、一碗鸭。南京把几个朝代叠在同一条马路上。",
+    body: "南京的美是沉的。明城墙可以骑，玄武湖把城放进水里，中山陵把山写成一种朝圣。去南京，不必把所有陵与馆走完——选一段墙、一座山、一条梧桐道，再找一碗盐水鸭。雨花石与新街口之间，是一座还在呼吸的古都。",
+    image: "/images/nanjing.jpg",
+    highlights: [
+      {
+        title: "城墙",
+        text: "从中华门走一段，砖比解说更厚。",
+      },
+      {
+        title: "湖与山",
+        text: "玄武湖或紫金山，选一个高度看城。",
+      },
+      {
+        title: "滋味",
+        text: "鸭、汤、一碟小笼，把六朝放进胃里。",
+      }
+    ],
+    itinerary: [
+      {
+        day: "第一日",
+        title: "城",
+        text: "中华门至一段城墙，午后夫子庙一带，夜走老门东之外的巷。",
+      },
+      {
+        day: "第二日",
+        title: "山",
+        text: "紫金山或中山陵，把城市从墙内拎到林里。",
+      },
+      {
+        day: "第三日",
+        title: "湖",
+        text: "玄武湖环一圈，把剩下的时间交给梧桐与一家小馆。",
+      }
+    ],
+    practical: [
+      { label: "最佳季节", value: "三月至四月，或十月至十一月" },
+      { label: "如何抵达", value: "南京南站 / 禄口机场" },
+      { label: "建议停留", value: "三日刚好" },
+      { label: "节奏", value: "城墙与山不要排在同一天" }
+    ],
+  },
+  {
+    slug: "xiamen",
+    nameZh: "厦门",
+    nameEn: "Xiamen",
+    province: "福建",
+    region: "jiangnan",
+    seasons: ["spring", "autumn", "winter"],
+    days: "3–4 日",
+    intensity: "轻",
+    tagline: "海风被写进巷子",
+    excerpt:
+      "鼓浪屿、沙茶面、一条被榕树撑开的路。厦门把海放得很近。",
+    body: "厦门是可以走着遇见海的城。鼓浪屿要早，否则钢琴与人声会把岛填满。城内的巷子比沙滩更像厦门：沙茶面、海蛎煎、被盐风吹旧的阳台。去厦门，把一半时间给岛，一半给没有攻略的小路。",
+    image: "/images/xiamen.jpg",
+    highlights: [
+      {
+        title: "鼓浪屿",
+        text: "清晨上岛，走没有店铺的坡。",
+      },
+      {
+        title: "巷与面",
+        text: "沙茶面比海滩更准确。",
+      },
+      {
+        title: "环岛",
+        text: "一条可以把风灌进袖口的路。",
+      }
+    ],
+    itinerary: [
+      {
+        day: "第一日",
+        title: "岛",
+        text: "早船鼓浪屿，避开龙头路主街，走别墅与坡。",
+      },
+      {
+        day: "第二日",
+        title: "城",
+        text: "中山路之外找一家面店，下午环岛或白城。",
+      },
+      {
+        day: "第三日",
+        title: "海",
+        text: "一座沙滩或一座炮台，把厦门从明信片里走松。",
+      }
+    ],
+    practical: [
+      { label: "最佳季节", value: "十月至次年四月，台风季避开" },
+      { label: "如何抵达", value: "高崎机场 / 厦门站" },
+      { label: "建议停留", value: "三日含岛" },
+      { label: "节奏", value: "鼓浪屿开船第一班" }
+    ],
+  },
+  {
+    slug: "qingdao",
+    nameZh: "青岛",
+    nameEn: "Qingdao",
+    province: "山东",
+    region: "north",
+    seasons: ["summer", "autumn"],
+    days: "3–4 日",
+    intensity: "轻",
+    tagline: "红瓦把海交给风",
+    excerpt:
+      "啤酒、栈桥、被潮气浸透的山坡。青岛是一座被海风吹斜的北方。",
+    body: "青岛的城从八大关的别墅开始变软。红瓦、石滩、被松树切开的海。栈桥上的人很多，金沙滩与老城的坡道更接近日常。去青岛，把一天给海，一天给老城的路，夜里一盘蛤蜊。",
+    image: "/images/qingdao.jpg",
+    highlights: [
+      {
+        title: "八大关",
+        text: "别墅与松把海隔成可以散步的句子。",
+      },
+      {
+        title: "老城坡",
+        text: "中山路之外，上山的台阶更像青岛。",
+      },
+      {
+        title: "海",
+        text: "选一处不拥挤的岸，把脚放进水里。",
+      }
+    ],
+    itinerary: [
+      {
+        day: "第一日",
+        title: "岸",
+        text: "栈桥一带看一眼，然后把时间交给八大关。",
+      },
+      {
+        day: "第二日",
+        title: "城",
+        text: "老城的坡与馆，午后一座啤酒小馆即可。",
+      },
+      {
+        day: "第三日",
+        title: "更远的海",
+        text: "金沙滩或崂山一线，早出晚归。",
+      }
+    ],
+    practical: [
+      { label: "最佳季节", value: "六月至九月海，十月城最干净" },
+      { label: "如何抵达", value: "青岛胶东机场 / 青岛站" },
+      { label: "建议停留", value: "三日" },
+      { label: "节奏", value: "海与老城不要挤在同一上午" }
+    ],
+  },
+  {
+    slug: "chengdu",
+    nameZh: "成都",
+    nameEn: "Chengdu",
+    province: "四川",
+    region: "southwest",
+    seasons: ["spring", "autumn", "winter"],
+    days: "3–5 日",
+    intensity: "轻",
+    featured: true,
+    tagline: "一座把闲练成制度的城",
+    excerpt:
+      "火锅、茶馆、竹。成都不催人。辣只是入口，回甘才是目的。",
+    body: "成都是为停下来准备的。宽窄巷子是给外地人的封面，真正的闲在街边的茶馆、一碗担担面、下午两点还没有散场的火锅。熊猫基地要早。若再往外走，青城或都江堰把水的脾气讲清楚。去成都，把日程里的「必须」划掉一半。",
+    image: "/images/chengdu.jpg",
+    highlights: [
+      {
+        title: "茶馆",
+        text: "人民公园或街边，盖碗把时间从钟上拿下来。",
+      },
+      {
+        title: "辣",
+        text: "火锅、冒菜、一碗面，选一种就够。",
+      },
+      {
+        title: "水",
+        text: "都江堰把一座城的闲与一条江的工程放在一起。",
+      }
+    ],
+    itinerary: [
+      {
+        day: "第一日",
+        title: "城",
+        text: "上午茶馆，下午小馆，夜火锅。宽窄只看一眼。",
+      },
+      {
+        day: "第二日",
+        title: "熊猫或水",
+        text: "早场熊猫基地，或都江堰半日。",
+      },
+      {
+        day: "第三日",
+        title: "再闲一天",
+        text: "把地图收起来，跟着香走。",
+      }
+    ],
+    practical: [
+      { label: "最佳季节", value: "三至五月，或十至十一月" },
+      { label: "如何抵达", value: "天府 / 双流，地铁已很全" },
+      { label: "建议停留", value: "三日城内，五日才出得去" },
+      { label: "节奏", value: "不要把火锅和早场熊猫排在同一天" }
+    ],
+  },
+  {
+    slug: "chongqing",
+    nameZh: "重庆",
+    nameEn: "Chongqing",
+    province: "重庆",
     region: "southwest",
     seasons: ["spring", "autumn"],
     days: "3–4 日",
     intensity: "中",
     featured: true,
-    tagline: "石峰从云里长出来",
+    tagline: "山城把江写成楼梯",
     excerpt:
-      "三千石英砂岩柱，被雾气反复擦亮。张家界不是为了被走完，而是为了被仰望。",
-    body: "武陵源的石峰并非突然出现在电影里。它们在湘西的雨里站了三亿年，薄膜一样的云从柱间穿过，把人的尺度轻轻拆掉。袁家界的观景台、杨家界的天波府、金鞭溪的谷底——同一座山，三种高度。去张家界，最好把日程写松一点：云海来不来，由山自己决定。",
-    image: "/images/zhangjiajie.jpg",
+      "雾、火锅、轨道穿楼。重庆不是平面的，是被两江折叠过的立体。",
+    body: "重庆要被爬，被过江，被雾打湿。洪崖洞是封面，十八梯与山城巷才是正文。轻轨从楼里穿过，江在脚下换成另一条。去重庆，穿一双能走台阶的鞋，把夜留给两江的灯，把胃交给一顿足够辣的火锅。",
+    image: "/images/chongqing.jpg",
     highlights: [
       {
-        title: "袁家界 · 阿凡达取景",
-        text: "南天一柱与乾坤柱在云海中轮流出场，是这座山最被传颂的面孔。",
+        title: "台阶",
+        text: "山城巷、十八梯，把高度走进膝盖。",
       },
       {
-        title: "金鞭溪",
-        text: "谷底的溪流把石峰从根部读一遍，适合把脚步放慢到水的速度。",
+        title: "两江",
+        text: "索道或夜船，城市在水上被重排。",
       },
       {
-        title: "天子山",
-        text: "黄昏时石峰被侧光切开，像一排沉默的兵。",
-      },
+        title: "火锅",
+        text: "选一家本地人排队的，而不是江景最贵的。",
+      }
     ],
     itinerary: [
       {
         day: "第一日",
-        title: "武陵源 · 上山",
-        text: "入园乘百龙电梯或索道上袁家界，沿石栈道走完迷魂台与战豆台，把云海留给偶然。",
+        title: "上城",
+        text: "解放碑到山城巷，夜看两江。",
       },
       {
         day: "第二日",
-        title: "金鞭溪与十里画廊",
-        text: "从水绕四门沿溪下行，午后转十里画廊观峰林侧影，傍晚回武陵源市区。",
+        title: "过江",
+        text: "索道或南岸看朝天门，下午一座博物馆或老街。",
       },
       {
         day: "第三日",
-        title: "天门山（可选）",
-        text: "若体力尚余，去天门山玻璃栈道与天门洞。否则把上午留给索溪峪的安静。",
-      },
+        title: "再下一层",
+        text: "一条你没有查过的巷，把重庆从灯光里领回来。",
+      }
     ],
     practical: [
-      { label: "最佳季节", value: "四月雾薄，九至十一月色层最干净" },
-      { label: "如何抵达", value: "张家界荷花机场，或高铁至张家界西" },
-      { label: "建议停留", value: "武陵源三天，天门山另加一天" },
-      { label: "节奏", value: "索道与电梯可省力，栈道仍需稳妥的鞋" },
+      { label: "最佳季节", value: "三至五月，或十至十一月，避开盛夏" },
+      { label: "如何抵达", value: "江北机场 / 重庆北站" },
+      { label: "建议停留", value: "三日" },
+      { label: "节奏", value: "每天只安排一座山城的「一层」" }
+    ],
+  },
+  {
+    slug: "kunming",
+    nameZh: "昆明",
+    nameEn: "Kunming",
+    province: "云南",
+    region: "southwest",
+    seasons: ["spring", "autumn", "winter"],
+    days: "2–4 日",
+    intensity: "轻",
+    tagline: "一座省的春天停在这里",
+    excerpt:
+      "滇池、鲜花、不冷不热的风。昆明是云南的门厅，也是可以住下来的城。",
+    body: "昆明被叫做春城，不是修辞。翠湖的海鸥只在冬天来，滇池把风放得很宽。去昆明，不必急着转机去大理丽江——给这座城两天：一碗过桥米线，一场花市，一次看海一样看滇池。",
+    image: "/images/kunming.jpg",
+    highlights: [
+      {
+        title: "滇池",
+        text: "傍晚的风比市区的花市更像云南。",
+      },
+      {
+        title: "翠湖",
+        text: "冬日海鸥，其余季节是一座可以绕的园。",
+      },
+      {
+        title: "米线",
+        text: "过桥是仪式，日常的小碗往往更好。",
+      }
+    ],
+    itinerary: [
+      {
+        day: "第一日",
+        title: "城",
+        text: "翠湖与老街，夜一碗米线。",
+      },
+      {
+        day: "第二日",
+        title: "海一样的湖",
+        text: "滇池沿岸选一段走，把昆明从中转里救出来。",
+      }
+    ],
+    practical: [
+      { label: "最佳季节", value: "几乎全年，冬日有海鸥" },
+      { label: "如何抵达", value: "长水机场是云南的枢纽" },
+      { label: "建议停留", value: "两日，若入滇则当作门厅" },
+      { label: "节奏", value: "不要把昆明写成一晚的过路" }
+    ],
+  },
+  {
+    slug: "lijiang",
+    nameZh: "丽江",
+    nameEn: "Lijiang",
+    province: "云南",
+    region: "southwest",
+    seasons: ["spring", "autumn"],
+    days: "3–4 日",
+    intensity: "中",
+    tagline: "古城把玉龙写成背景",
+    excerpt:
+      "石板、水渠、被改写成酒吧的院子。丽江要早起，才还是一座城。",
+    body: "丽江的夜容易被歌声占据。清晨的石板还是湿的，水渠还听得见。束河比大研更像可以住的村子。去丽江，把酒吧街当成路过，把玉龙当成天气，把一盘乳扇当成早餐。",
+    image: "/images/lijiang.jpg",
+    highlights: [
+      {
+        title: "清晨大研",
+        text: "八点前的巷子，还没有被扩音器打开。",
+      },
+      {
+        title: "束河",
+        text: "更适合住一晚的尺度。",
+      },
+      {
+        title: "山",
+        text: "玉龙在云开时出现，不要为它改所有日程。",
+      }
+    ],
+    itinerary: [
+      {
+        day: "第一日",
+        title: "大研",
+        text: "早走巷，午后出主街，夜早睡。",
+      },
+      {
+        day: "第二日",
+        title: "束河",
+        text: "换到束河住，把节奏放慢。",
+      },
+      {
+        day: "第三日",
+        title: "山或湖",
+        text: "天气好则看山，否则泸沽太远，选近处的田。",
+      }
+    ],
+    practical: [
+      { label: "最佳季节", value: "三至五月，或九至十一月" },
+      { label: "如何抵达", value: "三义机场，昆明高铁也可接" },
+      { label: "建议停留", value: "三日" },
+      { label: "节奏", value: "不住主街中心，早起是关键" }
     ],
   },
   {
     slug: "guilin",
-    nameZh: "桂林阳朔",
+    nameZh: "桂林",
     nameEn: "Guilin",
     province: "广西",
     region: "southwest",
@@ -66,345 +585,197 @@ export const destinations: Destination[] = [
     featured: true,
     tagline: "水把山写成倒影",
     excerpt:
-      "漓江并不是一条河，是一条被喀斯特反复折叠的镜子。竹筏比游轮更接近它的脾气。",
-    body: "从桂林到阳朔，山峰像一排被水磨过的印章。二十元人民币背面的黄布倒影仍在，但真正动人的是兴坪到杨堤那段不被扩音器打扰的江面。阳朔的西街早已喧闹，可骑行十里之外的遇龙河，还能听见水牛把蹄子放进浅滩的声音。",
+      "漓江、米粉、一座被喀斯特围住的城。竹筏比游轮更接近它的脾气。",
+    body: "桂林是城，阳朔是它南面的句子。两江四湖把喀斯特放进城里的夜。真正动人的是兴坪到杨堤那段江面。去桂林，吃一碗米粉，走一段江，把西街的喧闹留给路过。",
     image: "/images/guilin.jpg",
     highlights: [
       {
-        title: "漓江竹筏",
-        text: "杨堤至兴坪一段，山从水里长出来，又被水轻轻托住。",
+        title: "漓江",
+        text: "杨堤至兴坪，山从水里长出来。",
       },
       {
-        title: "遇龙河骑行",
-        text: "沿田埂骑向旧县，稻田、桥、水牛，构成最日常的风景。",
+        title: "米粉",
+        text: "城里每一碗都在争论正宗，跟着香走即可。",
       },
       {
-        title: "兴坪古镇",
-        text: "游轮停靠之外的巷子里，豆浆与石板还按自己的钟点走。",
-      },
-    ],
-    itinerary: [
-      {
-        day: "第一日",
-        title: "桂林入城",
-        text: "象鼻山与东巷作开场，晚上把身体交给漓江边的夜色，不必赶两江四湖。",
-      },
-      {
-        day: "第二日",
-        title: "漓江下行",
-        text: "上午竹筏或游轮至阳朔，下午在西街外围找一处能看见山的客栈。",
-      },
-      {
-        day: "第三日",
         title: "遇龙河",
-        text: "租自行车沿河骑行，在遇龙桥或旧县停下吃一碗米粉，傍晚看山变墨色。",
-      },
-    ],
-    practical: [
-      { label: "最佳季节", value: "三至五月新绿，十至十一月江水清" },
-      { label: "如何抵达", value: "桂林两江国际机场 / 桂林站，阳朔有高铁" },
-      { label: "建议停留", value: "桂林一夜，阳朔两至三夜" },
-      { label: "节奏", value: "避开西街核心区的夜，风景就回来了" },
-    ],
-  },
-  {
-    slug: "huangshan",
-    nameZh: "黄山",
-    nameEn: "Huangshan",
-    province: "安徽",
-    region: "jiangnan",
-    seasons: ["spring", "autumn", "winter"],
-    days: "2–3 日",
-    intensity: "深",
-    featured: true,
-    tagline: "云海之上，松还在守着",
-    excerpt:
-      "迎客松被拍过无数次。真正的黄山，是夜里被冻醒、清晨推开窗看见整座山浮在云上。",
-    body: "黄山把中国山水画的全部词汇放在一座山上：奇松、怪石、云海、温泉、冬雪。过夜是必要的。只有住在北海或白鹅岭，才能赶在游客索道开动之前，看见光明顶被第一线日出切开。下山后，把脚步交给屯溪老街和呈坎，山的余温会在徽州的木雕里再停留一夜。",
-    image: "/images/huangshan.jpg",
-    highlights: [
-      {
-        title: "北海日出",
-        text: "清凉台是经典机位，但任何一处朝东的石沿，都可能成为你的。",
-      },
-      {
-        title: "西海大峡谷",
-        text: "向下走入峰林内部，黄山从明信片变成可以呼吸的地质。",
-      },
-      {
-        title: "徽州余韵",
-        text: "呈坎、宏村或屯溪，把山的垂直换成民居的水平。",
-      },
+        text: "骑行比游船更日常。",
+      }
     ],
     itinerary: [
       {
         day: "第一日",
-        title: "上山过夜",
-        text: "云谷寺索道至白鹅岭，沿途经始信峰至北海住宿，黄昏走一圈西海栈道。",
-      },
-      {
-        day: "第二日",
-        title: "日出与下山",
-        text: "黎明看日出，午前走西海大峡谷，下午索道下山，夜宿屯溪。",
-      },
-      {
-        day: "第三日",
-        title: "徽州",
-        text: "呈坎或宏村半日，把马头墙当作黄山的注脚。",
-      },
-    ],
-    practical: [
-      { label: "最佳季节", value: "十月色层最稳，冬季雪后需冰爪" },
-      { label: "如何抵达", value: "黄山屯溪机场 / 黄山北站，转景区班车" },
-      { label: "建议停留", value: "山上务必一夜，山下再留一夜" },
-      { label: "节奏", value: "住宿需提前，旺季步道拥挤，日出值得早起" },
-    ],
-  },
-  {
-    slug: "hangzhou",
-    nameZh: "杭州西湖",
-    nameEn: "West Lake",
-    province: "浙江",
-    region: "jiangnan",
-    seasons: ["spring", "autumn"],
-    days: "2–3 日",
-    intensity: "轻",
-    tagline: "一湖被写了千年",
-    excerpt:
-      "断桥、苏堤、雷峰塔——名字已经太熟。清晨七点的湖面，仍能把熟识的句子重新写湿。",
-    body: "西湖的困难不在于找不到风景，而在于如何把风景从拥挤里捞出来。答案几乎总是同一个：去得早。白堤还没有被打开，柳丝贴着水，保俶塔只是一个淡墨点。龙井的茶室在山里，灵隐的香在谷中。杭州把宋的审美活成了可以散步的市政公园，这本身就是一种文明的自信。",
-    image: "/images/hangzhou.jpg",
-    highlights: [
-      {
-        title: "苏堤春晓",
-        text: "六座桥把湖分成可以慢慢读的句子，清晨没有扩音器。",
-      },
-      {
-        title: "龙井问茶",
-        text: "狮峰一带的茶园在清明前后最嫩，坐下来比买茶更重要。",
-      },
-      {
-        title: "杨公堤西线",
-        text: "游客较少的一面，茅家埠与浴鹄湾还保留着湖的呼吸。",
-      },
-    ],
-    itinerary: [
-      {
-        day: "第一日",
-        title: "环湖",
-        text: "清晨白堤至断桥，沿苏堤向南，午后翻到杨公堤，傍晚在湖滨看灯慢慢亮。",
-      },
-      {
-        day: "第二日",
-        title: "山与茶",
-        text: "上午灵隐与飞来峰，下午龙井村，把一盏茶喝到见杯底。",
-      },
-      {
-        day: "第三日",
         title: "城里",
-        text: "南宋御街或中国美院象山，作为西湖之外的另一种杭州。",
-      },
-    ],
-    practical: [
-      { label: "最佳季节", value: "三月至四月，或十月桂花时节" },
-      { label: "如何抵达", value: "杭州东站 / 萧山机场，地铁至龙翔桥" },
-      { label: "建议停留", value: "两日够湖，三日才有茶与寺" },
-      { label: "节奏", value: "七点前出门，把拥挤留给别人" },
-    ],
-  },
-  {
-    slug: "forbidden-city",
-    nameZh: "紫禁城",
-    nameEn: "Forbidden City",
-    province: "北京",
-    region: "north",
-    seasons: ["autumn", "winter", "spring"],
-    days: "1–2 日",
-    intensity: "中",
-    featured: true,
-    tagline: "中轴线把时间摆正",
-    excerpt:
-      "九千间房屋，一条看不见的线。走进午门，声音先被院子吞掉，然后才是屋顶的金。",
-    body: "故宫不是一张可以拍完的明信片。它是一套关于权力、礼仪与季节的空间语法：前朝的开阔，后廷的紧凑，御花园忽然变得像人。东华门一侧的文物馆把器物从墙上放回手里。冬天初雪时，朱红与白最干净；秋天的琉璃瓦会把整座城映成一种克制的暖。出神武门，景山正好把这条中轴线收成一幅。",
-    image: "/images/forbidden-city.jpg",
-    highlights: [
-      {
-        title: "中轴线",
-        text: "午门、太和门、太和殿，空间一次次被放大，人一次次被缩小。",
-      },
-      {
-        title: "珍宝馆与钟表馆",
-        text: "东西两路比中路安静，器物比宫殿更接近日常的帝国。",
-      },
-      {
-        title: "景山俯瞰",
-        text: "出北门即上山，是理解整座城布局的唯一高度。",
-      },
-    ],
-    itinerary: [
-      {
-        day: "第一日",
-        title: "故宫全日",
-        text: "早场入园走中路，午后转东路珍宝馆，出神武门上景山看黄昏。",
+        text: "两江四湖或象山，一碗米粉。",
       },
       {
         day: "第二日",
-        title: "皇城外围",
-        text: "天安门、太庙或北海，把故宫放回一座活着的北京。",
-      },
-    ],
-    practical: [
-      { label: "最佳季节", value: "十月至十一月，或雪后的清晨" },
-      { label: "如何抵达", value: "地铁天安门东 / 天安门西，需预约门票" },
-      { label: "建议停留", value: "闭园前四小时仍嫌不够" },
-      { label: "节奏", value: "周中早场，少在太和殿广场停留过久" },
-    ],
-  },
-  {
-    slug: "great-wall",
-    nameZh: "长城",
-    nameEn: "Great Wall",
-    province: "北京",
-    region: "north",
-    seasons: ["autumn", "winter", "spring"],
-    days: "1 日",
-    intensity: "中",
-    featured: true,
-    tagline: "墙在山脊上呼吸",
-    excerpt:
-      "长城不是一道墙，是一条随着山势思考的线。去金山岭或慕田峪，把八达岭留给明信片。",
-    body: "从北京出发，长城有许多入口。八达岭最便利，也最拥挤。金山岭把墙写成可以走路的书法：敌楼的节奏、包砖的起伏、山谷里的风。秋天，山变成铜与铁锈；冬天，墙成为一条白线。走长城需要的不是征服，而是承认：这条线比任何王朝都更耐心。",
-    image: "/images/great-wall.jpg",
-    highlights: [
-      {
-        title: "金山岭",
-        text: "摄影者的长城，敌楼密集，秋色与墙体互相成就。",
-      },
-      {
-        title: "慕田峪",
-        text: "索道完善，适合不想把一天交给交通的人，仍能看见真的山。",
-      },
-      {
-        title: "司马台（可选）",
-        text: "更陡，更安静，夜场灯光是另一种长城。",
-      },
-    ],
-    itinerary: [
-      {
-        day: "一日",
-        title: "金山岭往返",
-        text: "清晨出城，走西五眼至东五眼中最美的一段，下午返回北京，把腿交给晚饭。",
-      },
-    ],
-    practical: [
-      { label: "最佳季节", value: "十月红叶，或雪后工作日" },
-      { label: "如何抵达", value: "旅游专线或包车，自驾需早出" },
-      { label: "建议停留", value: "一天足够，不必两段都走" },
-      { label: "节奏", value: "徒步段选好退路，风大时加一层" },
-    ],
-  },
-  {
-    slug: "jiuzhaigou",
-    nameZh: "九寨沟",
-    nameEn: "Jiuzhaigou",
-    province: "四川",
-    region: "southwest",
-    seasons: ["autumn"],
-    days: "2–3 日",
-    intensity: "中",
-    tagline: "水比天空更蓝",
-    excerpt:
-      "五花海把树干沉在玻璃下面。秋天的九寨不是风景，是一次关于颜色的教育。",
-    body: "藏族村寨、钙化湖、彩林——九寨沟把三种本来不该如此靠近的东西叠在一起。五花海、五彩池、诺日朗瀑布是被说得最多的名字，但真正让人停住的是水的透明度：它让湖底的木头成为画的一部分。去九寨要服从季节。十月中下旬的彩林值得为此改机票。",
-    image: "/images/jiuzhaigou.jpg",
-    highlights: [
-      {
-        title: "五花海",
-        text: "湖水把森林画进自己身体里，是九寨最不容错过的一处。",
-      },
-      {
-        title: "长海与五彩池",
-        text: "沟的尽端，长海沉静，五彩池小而饱和。",
-      },
-      {
-        title: "诺日朗",
-        text: "瀑布的宽度比高度更惊人，像一封被展开的白色信。",
-      },
-    ],
-    itinerary: [
-      {
-        day: "第一日",
-        title: "入沟",
-        text: "早班车进沟，先走则查洼沟至长海，折返五彩池，下午看诺日朗。",
-      },
-      {
-        day: "第二日",
-        title: "日则沟",
-        text: "五花海、珍珠滩、熊猫海一线，把最饱和的颜色留给光线最好的午前。",
+        title: "江",
+        text: "竹筏或骑行，夜宿阳朔但不困在西街。",
       },
       {
         day: "第三日",
-        title: "黄龙或返程",
-        text: "若体力允许，去黄龙看钙化彩池；否则把上午留给沟口的藏寨。",
-      },
+        title: "田",
+        text: "遇龙河沿岸，把速度降到水牛。",
+      }
     ],
     practical: [
-      { label: "最佳季节", value: "十月中下旬彩林，需提前预约" },
-      { label: "如何抵达", value: "九寨黄龙机场，或成都大巴 / 高铁转车" },
-      { label: "建议停留", value: "沟内两日，勿一日走完" },
-      { label: "节奏", value: "高原走得慢，防晒与水比装备清单更重要" },
+      { label: "最佳季节", value: "四至十一月，冬日山形更清楚" },
+      { label: "如何抵达", value: "两江机场 / 桂林站" },
+      { label: "建议停留", value: "三日含阳朔" },
+      { label: "节奏", value: "江上的那天不要再排夜游" }
     ],
   },
   {
-    slug: "lijiang",
-    nameZh: "丽江",
-    nameEn: "Lijiang",
-    province: "云南",
+    slug: "zhangjiajie",
+    nameZh: "张家界",
+    nameEn: "Zhangjiajie",
+    province: "湖南",
     region: "southwest",
-    seasons: ["spring", "autumn", "winter"],
+    seasons: ["spring", "autumn"],
     days: "3–4 日",
-    intensity: "轻",
-    tagline: "玉龙在城的尽头",
+    intensity: "中",
+    tagline: "石峰从云里长出来",
     excerpt:
-      "古城的灯已经太亮。可黎明的石板路、纳西的井、远处那座不化的雪山，仍是原来的丽江。",
-    body: "丽江被写过、被唱过、被通宵过。要看见它，需要换一个钟点：早上七点的四方街里，水流还走在游客前面。束河比大研安静一寸。白沙的壁画把纳西的宇宙画在墙上。玉龙雪山不必登顶，在蓝月谷或云杉坪，山已经把规模说清楚了。晚上若不想被酒吧吞掉，去看一场纳西古乐——它比灯更接近这座城的骨头。",
-    image: "/images/lijiang.jpg",
+      "一座以山为姓的城。武陵源在门外，米粉与夜在城里。",
+    body: "张家界是湘西的入口。峰林在园里，城在谷底。去张家界，把园的日程写松：云海来不来，由山自己决定。晚上回到武陵源或市区，一碗米粉把膝盖还给人。",
+    image: "/images/zhangjiajie.jpg",
     highlights: [
       {
-        title: "黎明大研",
-        text: "在四方街被打开之前走进去，水与石还按自己的时间走。",
+        title: "武陵源",
+        text: "同一座山，栈道、谷底、观景台三种高度。",
       },
       {
-        title: "玉龙雪山",
-        text: "蓝月谷的水是雪山的注脚，云杉坪把山放到可以平视的距离。",
+        title: "城里",
+        text: "把夜留给馆子，而不是园里的灯。",
       },
       {
-        title: "白沙古镇",
-        text: "壁画与田野，丽江还没有被写成夜生活之前的样子。",
-      },
+        title: "云",
+        text: "过夜的人，才有机会看见峰林从墨里洗出来。",
+      }
     ],
     itinerary: [
       {
         day: "第一日",
-        title: "大研与束河",
-        text: "午后到，黄昏在大研迷路一次，夜里改去束河睡觉。",
+        title: "上山",
+        text: "入园选一条线走完，不住赶。",
       },
       {
         day: "第二日",
-        title: "雪山",
-        text: "蓝月谷或云杉坪，量力索道。高原反应比风景更需要被尊重。",
+        title: "谷底",
+        text: "金鞭溪把石峰从根部读一遍。",
       },
       {
         day: "第三日",
-        title: "白沙",
-        text: "壁画、田野、一顿纳西午饭，把丽江从夜色里赎回来。",
-      },
+        title: "出园",
+        text: "天门山可选。否则把上午留给一座安静的馆。",
+      }
     ],
     practical: [
-      { label: "最佳季节", value: "三至五月，或九至十一月" },
-      { label: "如何抵达", value: "丽江三义机场 / 丽江站" },
-      { label: "建议停留", value: "三夜起，雪山单独一天" },
-      { label: "节奏", value: "缓进高原，酒和昼夜颠倒都不是朋友" },
+      { label: "最佳季节", value: "四月雾薄，九至十一月最干净" },
+      { label: "如何抵达", value: "荷花机场 / 张家界西" },
+      { label: "建议停留", value: "园内三日" },
+      { label: "节奏", value: "门票与交通都要提前，脚步仍需慢" }
+    ],
+  },
+  {
+    slug: "xian",
+    nameZh: "西安",
+    nameEn: "Xi'an",
+    province: "陕西",
+    region: "northwest",
+    seasons: ["spring", "autumn"],
+    days: "3–4 日",
+    intensity: "中",
+    featured: true,
+    tagline: "城墙把长安还围着",
+    excerpt:
+      "面、城砖、地下还有一支军队。西安把几个朝代叠在同一碗汤里。",
+    body: "西安是为胃和脚准备的古都。城墙上可以骑行，回民街的主路是封面，侧巷才是正文。兵马俑在城外，碑林在城里。去西安，先承认自己会被一碗泡馍说服，再决定要不要去临潼。",
+    image: "/images/xian.jpg",
+    highlights: [
+      {
+        title: "城墙",
+        text: "黄昏骑一圈，垛口把灯写成重复的字。",
+      },
+      {
+        title: "面",
+        text: "泡馍、肉夹馍、葫芦头，选一种认真吃。",
+      },
+      {
+        title: "碑林",
+        text: "把书法从帖变成可以绕行的森林。",
+      }
+    ],
+    itinerary: [
+      {
+        day: "第一日",
+        title: "城里",
+        text: "城墙、碑林、一碗面。回民街只穿侧巷。",
+      },
+      {
+        day: "第二日",
+        title: "城外",
+        text: "临潼半日，回来仍要吃一顿。",
+      },
+      {
+        day: "第三日",
+        title: "再走一走",
+        text: "书院门或一条没有出现在攻略里的街。",
+      }
+    ],
+    practical: [
+      { label: "最佳季节", value: "四至五月，或十至十一月" },
+      { label: "如何抵达", value: "咸阳机场 / 西安北" },
+      { label: "建议停留", value: "三日" },
+      { label: "节奏", value: "俑坑与城墙不要排在同一天" }
+    ],
+  },
+  {
+    slug: "dunhuang",
+    nameZh: "敦煌",
+    nameEn: "Dunhuang",
+    province: "甘肃",
+    region: "northwest",
+    seasons: ["autumn", "spring"],
+    days: "2–4 日",
+    intensity: "中",
+    tagline: "风把时间吹薄了",
+    excerpt:
+      "洞窟、沙丘、一座还停在河西走廊上的城。",
+    body: "敦煌很小，风很大。白天进窟，黄昏上沙。城里的夜空比灯密。去敦煌，把数字展示中心当成预习，把莫高窟当成无法拍照的记忆，把月牙泉当成一个愿意停下来的理由。",
+    image: "/images/dunhuang.jpg",
+    highlights: [
+      {
+        title: "窟",
+        text: "不让拍照是对的。眼睛被迫工作。",
+      },
+      {
+        title: "沙",
+        text: "鸣沙山的黄昏把人变成一个点。",
+      },
+      {
+        title: "城",
+        text: "一夜的星，比任何夜市更值得。",
+      }
+    ],
+    itinerary: [
+      {
+        day: "第一日",
+        title: "窟",
+        text: "上午数字中心，下午实地。",
+      },
+      {
+        day: "第二日",
+        title: "沙与泉",
+        text: "傍晚鸣沙山，夜里早睡，星会来。",
+      }
+    ],
+    practical: [
+      { label: "最佳季节", value: "五月，或九至十月，避开盛夏" },
+      { label: "如何抵达", value: "敦煌机场 / 柳园接驳" },
+      { label: "建议停留", value: "两日紧，三日松" },
+      { label: "节奏", value: "洞窟预约是第一件事" }
     ],
   },
   {
@@ -417,238 +788,366 @@ export const destinations: Destination[] = [
     days: "4–6 日",
     intensity: "深",
     featured: true,
-    tagline: "海拔把心声放慢",
+    tagline: "先学会走得慢",
     excerpt:
-      "布达拉宫不是一座宫殿，是一座被信仰举起来的山。在拉萨，先学会走得慢。",
-    body: "拉萨的光比内地更硬，影子更短，转经的人把八廓街走成一条河。布达拉宫需要预约，也需要氧气一样的耐心：红宫、白宫、金顶，层层把人从尘世里抽离。大昭寺的觉沃佛前，酥油灯把时间熬成一种气味。去拉萨不是打卡，是把自己交给高原——第一天只散步，第二天再进宫，第三天去色拉寺看辩经。山南与纳木错都在不远处，但拉萨本身已经足够。",
+      "光更硬，空气更薄。拉萨要求预约，也要求耐心。",
+    body: "拉萨不是被看完的，是被走慢的。八廓的转经与布达拉的轮廓是这座城的呼吸。去拉萨，头两天不要安排高。酥油茶、一圈转经、一场黄昏。高原会自己决定你能不能再往外走。",
     image: "/images/lhasa.jpg",
     highlights: [
       {
-        title: "布达拉宫",
-        text: "必须预约。红宫的灵塔殿是整座建筑的心脏。",
+        title: "八廓",
+        text: "顺时针走，把速度交给转经的人。",
       },
       {
-        title: "八廓与大昭寺",
-        text: "顺时针走，让转经筒和脚步成为同一件事。",
+        title: "布达拉",
+        text: "预约，慢上。远看有时比进去更完整。",
       },
       {
-        title: "色拉寺辩经",
-        text: "下午的辩经场，掌声与佛理同时落下。",
-      },
+        title: "光",
+        text: "下午的影子很长，这是拉萨的钟。",
+      }
     ],
     itinerary: [
       {
         day: "第一日",
         title: "适应",
-        text: "只在八廓街慢走，喝水，早睡。不要安排布达拉。",
+        text: "不爬高，喝水，转一圈八廓。",
       },
       {
         day: "第二日",
-        title: "布达拉宫",
-        text: "午前入宫，下午在公园里看它的侧面被光慢慢移动。",
+        title: "宫",
+        text: "布达拉或大昭，只排一件。",
       },
       {
         day: "第三日",
-        title: "大昭寺与色拉",
-        text: "清晨大昭寺，下午色拉寺辩经，晚上把海拔交给睡眠。",
-      },
+        title: "再慢一天",
+        text: "若头不疼，再考虑外线。",
+      }
     ],
     practical: [
-      { label: "最佳季节", value: "五至十月，日照长、路况稳" },
-      { label: "如何抵达", value: "拉萨贡嘎机场，或青藏 / 川藏铁路" },
-      { label: "建议停留", value: "至少四夜，勿第一天进宫" },
-      { label: "节奏", value: "缓进缓出，防晒、保湿、不饮酒" },
+      { label: "最佳季节", value: "六至九月，十月天高" },
+      { label: "如何抵达", value: "贡嘎机场，进藏需合规手续" },
+      { label: "建议停留", value: "五日含适应" },
+      { label: "节奏", value: "头两日不做剧烈行程" }
     ],
   },
   {
-    slug: "xian",
-    nameZh: "西安",
-    nameEn: "Xi'an",
-    province: "陕西",
-    region: "northwest",
+    slug: "harbin",
+    nameZh: "哈尔滨",
+    nameEn: "Harbin",
+    province: "黑龙江",
+    region: "north",
+    seasons: ["winter"],
+    days: "3–4 日",
+    intensity: "中",
+    featured: true,
+    tagline: "冬天把城市变成冰",
+    excerpt:
+      "面包、雪、被俄语写过的街。哈尔滨是为严寒准备的节日。",
+    body: "哈尔滨的正季是冬。冰灯把松花江岸变成可以走的晶体，中央大街的石板被雪填平。去哈尔滨，要一件真正的羽绒服，一上面包，一场在零下仍愿意出门的夜。其余季节，它是一座安静的北方。",
+    image: "/images/harbin.jpg",
+    highlights: [
+      {
+        title: "冰",
+        text: "冰雪大世界或江上的晶体，选一场夜。",
+      },
+      {
+        title: "中央大街",
+        text: "石板与面包，把俄式的壳走成散步。",
+      },
+      {
+        title: "雪",
+        text: "圣索菲亚的黄昏，雪比灯更亮。",
+      }
+    ],
+    itinerary: [
+      {
+        day: "第一日",
+        title: "街",
+        text: "中央大街到教堂，夜上面包。",
+      },
+      {
+        day: "第二日",
+        title: "冰",
+        text: "把晚上交给冰灯，白天少排。",
+      },
+      {
+        day: "第三日",
+        title: "江",
+        text: "松花江岸走一段，把冻疮留给回忆。",
+      }
+    ],
+    practical: [
+      { label: "最佳季节", value: "十二月至二月" },
+      { label: "如何抵达", value: "哈尔滨太平机场 / 哈尔滨站" },
+      { label: "建议停留", value: "三日" },
+      { label: "节奏", value: "夜活动，昼补眠，注意保暖" }
+    ],
+  },
+  {
+    slug: "guangzhou",
+    nameZh: "广州",
+    nameEn: "Guangzhou",
+    province: "广东",
+    region: "southwest",
+    seasons: ["autumn", "winter", "spring"],
+    days: "3–4 日",
+    intensity: "轻",
+    tagline: "早茶是一种制度",
+    excerpt:
+      "珠江、骑楼、一笼点心。广州把南中国的密度煮进一壶茶里。",
+    body: "广州要从早茶开始。点单是社交，虾饺是语法。沿江的骑楼与沙面把几种世纪叠在一起。去广州，不要只为了一座塔——把两顿早茶写进日程，比任何夜游更接近这座城。",
+    image: "/images/guangzhou.jpg",
+    highlights: [
+      {
+        title: "早茶",
+        text: "老字号要早，或找一家没有排队的街边。",
+      },
+      {
+        title: "沿江",
+        text: "沙面与骑楼，把热风走成散步。",
+      },
+      {
+        title: "夜",
+        text: "珠江的船是封面，小馆才是正文。",
+      }
+    ],
+    itinerary: [
+      {
+        day: "第一日",
+        title: "茶与江",
+        text: "早茶，下午沙面，夜沿江。",
+      },
+      {
+        day: "第二日",
+        title: "城",
+        text: "永庆坊之外找一条更日常的骑楼。",
+      },
+      {
+        day: "第三日",
+        title: "再一顿早茶",
+        text: "换一家，比较两种虾饺，这就是广州。",
+      }
+    ],
+    practical: [
+      { label: "最佳季节", value: "十一至四月，避开湿热盛夏" },
+      { label: "如何抵达", value: "白云机场 / 广州南" },
+      { label: "建议停留", value: "三日" },
+      { label: "节奏", value: "把最好的胃口留给早上" }
+    ],
+  },
+  {
+    slug: "sanya",
+    nameZh: "三亚",
+    nameEn: "Sanya",
+    province: "海南",
+    region: "southwest",
+    seasons: ["winter", "spring"],
+    days: "4–6 日",
+    intensity: "轻",
+    tagline: "冬天的海",
+    excerpt:
+      "沙滩、礁、被盐风吹开的椰子。三亚之外还有更安静的湾。",
+    body: "三亚是海南的南端，也是冬天的出口。亚龙湾与天涯是封面，落笔洞之外的小湾更适合把书放下。去三亚，选一段岸住下来，少换酒店，把海看成日程本身。",
+    image: "/images/sanya.jpg",
+    highlights: [
+      {
+        title: "岸",
+        text: "选一个湾住满，比每天换沙滩更值。",
+      },
+      {
+        title: "早",
+        text: "七点的海还没有被音响打开。",
+      },
+      {
+        title: "城外",
+        text: "往西或往山，人会少下来。",
+      }
+    ],
+    itinerary: [
+      {
+        day: "第一日",
+        title: "抵达",
+        text: "入住一处岸，下午只走路。",
+      },
+      {
+        day: "第二日",
+        title: "海",
+        text: "游泳或什么都不做。",
+      },
+      {
+        day: "第三日",
+        title: "再往外",
+        text: "一座更安静的湾或一座山。",
+      }
+    ],
+    practical: [
+      { label: "最佳季节", value: "十一至四月" },
+      { label: "如何抵达", value: "凤凰机场" },
+      { label: "建议停留", value: "四日以上才像度假" },
+      { label: "节奏", value: "少排景点，多留在同一片水" }
+    ],
+  },
+  {
+    slug: "wuhan",
+    nameZh: "武汉",
+    nameEn: "Wuhan",
+    province: "湖北",
+    region: "jiangnan",
     seasons: ["spring", "autumn"],
     days: "2–4 日",
     intensity: "中",
-    tagline: "地下还有一支军队",
+    tagline: "两江在这里汇成一座城",
     excerpt:
-      "兵马俑只是开始。西安把周秦汉唐叠在同一张城墙上，而面要配一碗羊肉。",
-    body: "临潼的俑坑把两千年前的军阵留在原位。一号坑的冲击力仍无法被照片代替：每一张脸都不重复。回到城里，明城墙是可以骑行的时间环，碑林把书法变成一座森林，回民街之外的永兴坊或老菜场更接近西安人的胃。大雁塔与大明宫则提醒你：这座城曾经是世界的首都，而现在它只是把那份气度，做成一碗加了蒜水的羊肉泡馍。",
-    image: "/images/xian.jpg",
+      "热干面、桥、被长江撑开的三镇。武汉是中国的十字路口。",
+    body: "武汉被两江分成三镇，桥把它们重新缝上。去武汉，一碗热干面是入城礼，黄鹤楼是远望，江滩是散步。户部巷是封面，老城区的小馆更准。",
+    image: "/images/wuhan.jpg",
     highlights: [
       {
-        title: "兵马俑",
-        text: "一号坑全日，二号坑的彩绘跪射俑是容易被忽略的细节。",
+        title: "面",
+        text: "早餐的热干面，芝麻酱要够。",
       },
       {
-        title: "城墙骑行",
-        text: "永宁门上墙，顺时针或逆时针，把西安看成一个完整的方。",
+        title: "江",
+        text: "一座桥、一段江滩，看水把城分开。",
       },
       {
-        title: "碑林",
-        text: "石上的字比博物馆的说明更接近长安的精神。",
-      },
+        title: "楼",
+        text: "黄鹤楼看一眼即可，江面比楼更长。",
+      }
     ],
     itinerary: [
       {
         day: "第一日",
-        title: "俑坑",
-        text: "早班车临潼，一号二号三号坑与铜车马，下午回城吃一碗泡馍。",
+        title: "过江",
+        text: "一碗面，一座桥，夜江滩。",
       },
       {
         day: "第二日",
-        title: "城内",
-        text: "碑林午前，城墙骑行黄昏，夜里避开最闹的回民街主路。",
-      },
-      {
-        day: "第三日",
-        title: "唐的影子",
-        text: "大雁塔与陕西历史博物馆，把兵马俑放回更长的时间里。",
-      },
+        title: "一镇",
+        text: "选武昌或汉口走透，不要三镇都赶。",
+      }
     ],
     practical: [
-      { label: "最佳季节", value: "四至五月，或九至十月" },
-      { label: "如何抵达", value: "西安咸阳机场 / 西安北站" },
-      { label: "建议停留", value: "两日核心，三日才从容" },
-      { label: "节奏", value: "俑坑单独一天，勿与城墙挤在上午" },
+      { label: "最佳季节", value: "三至五月，或九至十一月" },
+      { label: "如何抵达", value: "天河机场 / 武汉站" },
+      { label: "建议停留", value: "两日骨架，四日才闲" },
+      { label: "节奏", value: "热干面必须是早餐" }
     ],
   },
   {
-    slug: "suzhou",
-    nameZh: "苏州",
-    nameEn: "Suzhou",
-    province: "江苏",
-    region: "jiangnan",
-    seasons: ["spring", "autumn"],
-    days: "2–3 日",
-    intensity: "轻",
-    tagline: "园是缩小的宇宙",
-    excerpt:
-      "拙政园把一座山放进一亩池塘。苏州的园林不是风景，是可以走进去的哲学。",
-    body: "江南的园林是一种以小见大的技术：漏窗、廊、桥、石，把视线一次次折返。拙政园最开阔，留园最精巧，网师园在夜晚有时会把评弹放进水里。平江路的河道比狮子林的假山更接近苏州人的日常。若还有一日，去周庄或同里并不是必须——苏州城里，已经有足够的水。",
-    image: "/images/suzhou.jpg",
-    highlights: [
-      {
-        title: "拙政园",
-        text: "春日杜鹃与荷，是园林里最接近山水画的一处。",
-      },
-      {
-        title: "网师园",
-        text: "小而完整，夜园若开放，灯把廊柱写成另一种园。",
-      },
-      {
-        title: "平江路",
-        text: "住进河道边的旅馆，早晨听船从窗下过去。",
-      },
-    ],
-    itinerary: [
-      {
-        day: "第一日",
-        title: "园",
-        text: "拙政园与狮子林在同一带，午后平江路喝茶，把园从拥挤里救出来。",
-      },
-      {
-        day: "第二日",
-        title: "另一种园",
-        text: "留园或沧浪亭，傍晚去博物馆看吴门的画如何与园互相解释。",
-      },
-    ],
-    practical: [
-      { label: "最佳季节", value: "三月至四月，或十月" },
-      { label: "如何抵达", value: "苏州站 / 苏州北，上海虹桥约半小时" },
-      { label: "建议停留", value: "两日看园，三日把水也走完" },
-      { label: "节奏", value: "开园即入，十点后的拙政园是另一种体验" },
-    ],
-  },
-  {
-    slug: "dunhuang",
-    nameZh: "敦煌",
-    nameEn: "Dunhuang",
-    province: "甘肃",
+    slug: "kashgar",
+    nameZh: "喀什",
+    nameEn: "Kashgar",
+    province: "新疆",
     region: "northwest",
-    seasons: ["spring", "autumn"],
-    days: "2–3 日",
+    seasons: ["autumn", "spring"],
+    days: "3–5 日",
     intensity: "中",
-    tagline: "风把时间吹薄了",
+    featured: true,
+    tagline: "一座还停在路上的城",
     excerpt:
-      "莫高窟把颜色藏在崖壁里。鸣沙山把太阳放得很低。敦煌是丝绸之路还活着的一段。",
-    body: "去敦煌，先预约莫高窟。数字展示中心把洞窟讲清楚，再到实地看那几座被分配到的窟——飞天、莲花、被风吹淡的颜料。鸣沙山的月牙泉是地理上的奇迹：沙没有把水填掉。夜里的星比内地更密。若有余力，去雅丹看地质把大地写成另一种文字。敦煌让人意识到：中国的西部不是边缘，是文明曾经走过的路。",
-    image: "/images/dunhuang.jpg",
+      "土巷、巴扎、烤馕的香。喀什把丝绸之路写成可以迷路的街区。",
+    body: "喀什是南疆的门。老城的土墙把声音吸住，巴扎把葡萄干和铜器摊在同一块布上。去喀什，把一天交给没有地图的巷子，把一顿交给抓饭，把黄昏交给土巷的金。",
+    image: "/images/kashgar.jpg",
     highlights: [
       {
-        title: "莫高窟",
-        text: "必须预约。数字馆与实体窟是一套完整的观看。",
+        title: "老城",
+        text: "土巷比任何博物馆更完整。",
       },
       {
-        title: "鸣沙山 · 月牙泉",
-        text: "黄昏最美。沙丘的脊线会把人变成一个很小的点。",
+        title: "巴扎",
+        text: "跟着香走，买一块馕当午餐。",
       },
       {
-        title: "夜空",
-        text: "远离城区的戈壁，银河有时会老实出现。",
-      },
+        title: "黄昏",
+        text: "墙的颜色只在那一小时出现。",
+      }
     ],
     itinerary: [
       {
         day: "第一日",
-        title: "莫高窟",
-        text: "按预约时段参观，下午在市区博物馆把没看完的脉络补上。",
+        title: "巷",
+        text: "老城迷路，夜一盘抓饭。",
       },
       {
         day: "第二日",
-        title: "沙与泉",
-        text: "午后进鸣沙山，留下看日落，夜里若天气好，找一处能看见星的空地。",
+        title: "巴扎",
+        text: "把上午交给市场，下午再走一条巷。",
       },
       {
         day: "第三日",
-        title: "雅丹（可选）",
-        text: "西线雅丹地质公园，把敦煌从洞窟扩展成一整片大地。",
-      },
+        title: "再停一天",
+        text: "喀什不适合赶。",
+      }
     ],
     practical: [
-      { label: "最佳季节", value: "四至六月，或九至十月，避开盛夏" },
-      { label: "如何抵达", value: "敦煌机场 / 柳园站转车" },
-      { label: "建议停留", value: "两夜核心，三夜从容" },
-      { label: "节奏", value: "洞窟预约是硬门槛，沙山要防晒与防沙" },
+      { label: "最佳季节", value: "九至十月，或四至五月" },
+      { label: "如何抵达", value: "喀什机场，乌鲁木齐转机" },
+      { label: "建议停留", value: "三日起" },
+      { label: "节奏", value: "防晒、尊重当地习俗，少赶景点" }
     ],
   },
+  {
+    slug: "hongkong",
+    nameZh: "香港",
+    nameEn: "Hong Kong",
+    province: "香港",
+    region: "southwest",
+    seasons: ["autumn", "winter", "spring"],
+    days: "3–5 日",
+    intensity: "中",
+    tagline: "山与城叠在同一条天际线上",
+    excerpt:
+      "维多利亚港的密度。一碗车仔面，一场从山上看到的夜。",
+    body: "香港是垂直的。山在城的肩膀上，海在楼下。去香港，把一天给港岛的坡，一天给九龙的胃，一场黄昏给山顶或太平山以外的岭。茶餐厅比任何夜景都更接近日常。",
+    image: "/images/hongkong.jpg",
+    highlights: [
+      {
+        title: "港",
+        text: "天星小轮把两岸的密度送到风里。",
+      },
+      {
+        title: "坡与山",
+        text: "一条可以走上去的岭，比观景台更真。",
+      },
+      {
+        title: "茶餐",
+        text: "一碗面、一杯奶茶，把速度降下来。",
+      }
+    ],
+    itinerary: [
+      {
+        day: "第一日",
+        title: "港岛",
+        text: "中环到山，夜看一次海。",
+      },
+      {
+        day: "第二日",
+        title: "九龙",
+        text: "胃交给街头，下午一座博物馆或庙。",
+      },
+      {
+        day: "第三日",
+        title: "再往外",
+        text: "一座离岛或一条没有电梯的坡。",
+      }
+    ],
+    practical: [
+      { label: "最佳季节", value: "十至十二月最干爽" },
+      { label: "如何抵达", value: "香港国际机场，附图可点入" },
+      { label: "建议停留", value: "三日起" },
+      { label: "节奏", value: "少排网红店，多走坡" }
+    ],
+  }
 ];
 
-export const regions: {
-  id: RegionId;
-  nameZh: string;
-  nameEn: string;
-  blurb: string;
-}[] = [
-  {
-    id: "north",
-    nameZh: "华北",
-    nameEn: "North",
-    blurb: "城墙、宫殿、一条还在呼吸的边防。",
-  },
-  {
-    id: "jiangnan",
-    nameZh: "江南",
-    nameEn: "Jiangnan",
-    blurb: "湖、园、山。被写得最多，仍能被重新走湿。",
-  },
-  {
-    id: "southwest",
-    nameZh: "西南",
-    nameEn: "Southwest",
-    blurb: "喀斯特、彩林、古城。地形在这里把人的尺度拆掉。",
-  },
-  {
-    id: "northwest",
-    nameZh: "西北",
-    nameEn: "Northwest",
-    blurb: "俑坑与洞窟。丝绸之路还没有走完。",
-  },
-  {
-    id: "plateau",
-    nameZh: "青藏",
-    nameEn: "Plateau",
-    blurb: "光更硬，脚步必须更慢。",
-  },
+export const regions: { id: RegionId; nameZh: string; nameEn: string; blurb: string }[] = [
+  { id: "north", nameZh: "华北", nameEn: "North", blurb: "都城、海与冰。风把声音削薄。" },
+  { id: "jiangnan", nameZh: "江南", nameEn: "Jiangnan", blurb: "湖、园、一碗面。水把城写软。" },
+  { id: "southwest", nameZh: "西南", nameEn: "Southwest", blurb: "山城、喀斯特、一座把闲练成制度的盆地。" },
+  { id: "northwest", nameZh: "西北", nameEn: "Northwest", blurb: "城墙、洞窟、还停在路上的巷子。" },
+  { id: "plateau", nameZh: "青藏", nameEn: "Plateau", blurb: "光更硬，脚步必须更慢。" },
 ];
 
 export const seasons: {
@@ -664,7 +1163,7 @@ export const seasons: {
     nameZh: "春",
     nameEn: "Spring",
     months: "三 — 五 月",
-    blurb: "西湖的柳、苏州的杜鹃、桂林的新绿。江南在这一季把自己写得最满。",
+    blurb: "杭州的柳、苏州的园、昆明的风。江南和西南在这一季把自己写得最满。",
     image: "/images/hangzhou.jpg",
   },
   {
@@ -672,7 +1171,7 @@ export const seasons: {
     nameZh: "夏",
     nameEn: "Summer",
     months: "六 — 八 月",
-    blurb: "高原的窗口打开。拉萨的光最稳，丽江的山还没有被雨季完全打湿。",
+    blurb: "青岛的海、拉萨的光、哈尔滨之外的北方短暂地柔软。",
     image: "/images/lhasa.jpg",
   },
   {
@@ -680,16 +1179,16 @@ export const seasons: {
     nameZh: "秋",
     nameEn: "Autumn",
     months: "九 — 十一 月",
-    blurb: "九寨的彩林、黄山的云、长城的铜。这是中国风景最慷慨的三个月。",
-    image: "/images/jiuzhaigou.jpg",
+    blurb: "北京的银杏、喀什的巷、成都的闲。这是把城市走松的三个月。",
+    image: "/images/beijing.jpg",
   },
   {
     id: "winter",
     nameZh: "冬",
     nameEn: "Winter",
     months: "十二 — 二 月",
-    blurb: "故宫初雪，敦煌空旷。人少下来，城与沙都露出骨头。",
-    image: "/images/forbidden-city.jpg",
+    blurb: "哈尔滨的冰、三亚的海、敦煌的空。人少下来，城才露出骨头。",
+    image: "/images/harbin.jpg",
   },
 ];
 

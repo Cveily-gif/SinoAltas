@@ -8,7 +8,6 @@ export const journal: JournalArticle[] = [
     date: "十月",
     read: "8 分钟",
     image: "/images/huangshan.jpg",
-    destination: "huangshan",
     excerpt: "过夜的人，才能看见这座山如何把自己从墨色里慢慢洗出来。",
     paragraphs: [
       "索道在四点十分停运。山上的旅馆把热水限制在一个暖壶里，走廊里都是提前调好闹钟的呼吸。黄山的夜不是为了睡，是为了把人从白日的拥挤里拿出来，交给一种更古老的等待。",
@@ -54,7 +53,7 @@ export const journal: JournalArticle[] = [
     date: "十月",
     read: "7 分钟",
     image: "/images/jiuzhaigou.jpg",
-    destination: "jiuzhaigou",
+    destination: "chengdu",
     excerpt: "五花海把树干沉在玻璃下面。颜色在这里不是修辞。",
     paragraphs: [
       "飞机降落在高原边缘。空气先薄下来，然后才是风景。九寨沟的车票被预约系统管得很紧，这未必是坏事——它逼你把两天都交给沟，而不是把沟交给一天。",
