@@ -2,7 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { ArrowRight, Bookmark, X } from "lucide-react";
 import { SaveButton } from "@/components/save-button";
 import { Button } from "@/components/ui/button";
-import type { MapDots } from "@/components/china-map";
+import type { AtlasMode, MapDots } from "@/components/china-map";
 import { destsForProvince, destsForRegion, provinceMeta } from "@/data/provinces";
 import { destinations, getDestination, regions } from "@/data/destinations";
 import type { Destination } from "@/data/types";
@@ -24,6 +24,7 @@ type Props = {
   selectedSlug: string | null;
   onSelectProvince: (index: number | null) => void;
   onSelectDest: (slug: string | null) => void;
+  mode?: AtlasMode;
   className?: string;
 };
 
@@ -89,6 +90,7 @@ export function DashboardPanel({
   selectedSlug,
   onSelectProvince,
   onSelectDest,
+  mode = "travel",
   className,
 }: Props) {
   const saved = usePlanner((s) => s.saved);
@@ -245,7 +247,7 @@ export function DashboardPanel({
         ) : (
           <div className="rise-in mt-5">
             <p className="font-display text-lg leading-snug text-paper/90">
-              一省一气韵，点开便见。
+              {mode === "rail" ? "铁轨连山河。" : "一省一气韵，点开便见。"}
             </p>
             {hoverProv ? (
               <p className="mt-4 text-sm text-stone-light">

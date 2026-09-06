@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import {
   ChinaMap,
+  type AtlasMode,
   type ChinaMapHandle,
   type MapDots,
 } from "@/components/china-map";
@@ -32,6 +33,7 @@ function Home() {
   const [hoverIndex, setHoverIndex] = useState<number | null>(null);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [selectedSlug, setSelectedSlug] = useState<string | null>(null);
+  const [mode, setMode] = useState<AtlasMode>("travel");
   const mapRef = useRef<ChinaMapHandle>(null);
   const saved = usePlanner((s) => s.saved);
   const ready = usePlannerHydration();
@@ -103,6 +105,7 @@ function Home() {
               onHoverProvince={onHoverProvince}
               onSelectProvince={onSelectProvince}
               onSelectDest={onSelectDest}
+              mode={mode}
             />
           ) : (
             <div className="flex h-full min-h-[52svh] flex-col items-center justify-center gap-3 bg-ink">
@@ -126,6 +129,28 @@ function Home() {
             </div>
           )}
           <div className="pointer-events-none absolute inset-x-0 top-0 h-16 bg-gradient-to-b from-ink/40 to-transparent" />
+          <div className="absolute bottom-4 left-4 z-10 flex rounded-md border border-paper/15 bg-ink/80 p-0.5 backdrop-blur-sm">
+            {([
+              { id: "travel" as const, label: "游历" },
+              { id: "rail" as const, label: "高铁" },
+            ]).map((opt) => (
+              <button
+                key={opt.id}
+                type="button"
+                onClick={() => {
+                  setMode(opt.id);
+                  if (opt.id === "rail") setSelectedSlug(null);
+                }}
+                className={
+                  mode === opt.id
+                    ? "min-h-9 rounded-sm bg-paper/12 px-3.5 text-sm text-paper"
+                    : "min-h-9 rounded-sm px-3.5 text-sm text-paper/55 hover:text-paper"
+                }
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
         </div>
 
         {data ? (
@@ -136,6 +161,7 @@ function Home() {
             selectedSlug={selectedSlug}
             onSelectProvince={onSelectProvince}
             onSelectDest={onSelectDest}
+            mode={mode}
             className="z-10 h-[min(42svh,24rem)] shrink-0 border-t border-paper/10 lg:h-full lg:w-80 lg:border-t-0 lg:border-l lg:border-paper/10 xl:w-96"
           />
         ) : (

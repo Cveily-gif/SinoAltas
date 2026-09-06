@@ -9,6 +9,7 @@ import {
 } from "react";
 import { destGeo } from "@/data/dest-geo";
 import { destinations } from "@/data/destinations";
+import { hsrLines } from "@/data/hsr-lines";
 import { shortProvinceName, toQuantized } from "@/lib/geo";
 import { cn } from "@/lib/utils";
 
@@ -32,6 +33,8 @@ export type MapDots = {
   internal: [number, number][][];
   lattice?: { cx: number; cy: number; rot: number; gap: number };
 };
+
+export type AtlasMode = "travel" | "rail";
 
 export type DestPin = {
   slug: string;
@@ -70,6 +73,7 @@ type Props = {
   selectedIndex: number | null;
   selectedSlug: string | null;
   saved: string[];
+  mode?: AtlasMode;
   onHoverProvince: (index: number | null) => void;
   onSelectProvince: (index: number | null) => void;
   onSelectDest: (slug: string | null) => void;
@@ -201,6 +205,7 @@ export const ChinaMap = forwardRef<ChinaMapHandle, Props>(function ChinaMap(
 		selectedIndex,
 		selectedSlug,
 		saved,
+		mode = "travel",
 		onHoverProvince,
 		onSelectProvince,
 		onSelectDest,
@@ -275,6 +280,14 @@ export const ChinaMap = forwardRef<ChinaMapHandle, Props>(function ChinaMap(
 		data.provinces,
 		data.q
 	]);
+	const railPaths = useMemo(() => {
+		return hsrLines.map((line) =>
+			line.map((pt) => {
+				const q = toQuantized(pt[0], pt[1], data.bounds, data.q);
+				return [q.x, q.y] as [number, number];
+			}),
+		);
+	}, [data.bounds, data.q]);
 	const landBox = useMemo(() => {
 		let minx = Infinity, miny = Infinity, maxx = -Infinity, maxy = -Infinity;
 		for (const d of data.china) {
@@ -680,47 +693,54 @@ export const ChinaMap = forwardRef<ChinaMapHandle, Props>(function ChinaMap(
 			const prov = data.provinces[hoverIndex];
 			if (prov) strokePolylines(prov.borders, withAlpha(cinnabarHex, .55), 1.15);
 		}
-		const savedPins = pins.filter((p) => saved.includes(p.slug)).slice().sort((a, b) => destinations.findIndex((d) => d.slug === a.slug) - destinations.findIndex((d) => d.slug === b.slug));
-		if (savedPins.length > 1) {
-			ctx.beginPath();
-			ctx.strokeStyle = withAlpha(cinnabarHex, .7);
-			ctx.setLineDash([5, 6]);
-			ctx.lineWidth = 1.25;
-			savedPins.forEach((p, i) => {
-				const { sx, sy } = toS(p.x, p.y);
-				if (i === 0) ctx.moveTo(sx, sy);
-				else ctx.lineTo(sx, sy);
-			});
-			ctx.stroke();
-			ctx.setLineDash([]);
-		}
-		ctx.textBaseline = "middle";
-		ctx.font = "500 12px \"Noto Serif SC\", serif";
-		ctx.textAlign = "left";
-		for (const pin of pins) {
-			const { sx, sy } = toS(pin.x, pin.y);
-			const pinA = focusedIdx == null || pin.provinceIndex === focusedIdx ? 1 : 1 - fade * .72;
-			const active = pin.slug === selectedSlug || saved.includes(pin.slug);
-			const r = active ? 5 : 3.6;
-			if (pin.slug === selectedSlug) {
+		if (mode === "rail") {
+			ctx.lineJoin = "round";
+			ctx.lineCap = "round";
+			strokePolylines(railPaths, withAlpha(paperHex, .22 * (1 - fade * .4)), 3.2);
+			strokePolylines(railPaths, withAlpha(cinnabarHex, .92 * (1 - fade * .35)), 1.55);
+		} else {
+			const savedPins = pins.filter((p) => saved.includes(p.slug)).slice().sort((a, b) => destinations.findIndex((d) => d.slug === a.slug) - destinations.findIndex((d) => d.slug === b.slug));
+			if (savedPins.length > 1) {
 				ctx.beginPath();
-				ctx.strokeStyle = withAlpha(cinnabarHex, .5 * pinA);
-				ctx.lineWidth = 1;
-				ctx.arc(sx, sy, r + 7, 0, Math.PI * 2);
+				ctx.strokeStyle = withAlpha(cinnabarHex, .7);
+				ctx.setLineDash([5, 6]);
+				ctx.lineWidth = 1.25;
+				savedPins.forEach((p, i) => {
+					const { sx, sy } = toS(p.x, p.y);
+					if (i === 0) ctx.moveTo(sx, sy);
+					else ctx.lineTo(sx, sy);
+				});
 				ctx.stroke();
+				ctx.setLineDash([]);
 			}
-			ctx.beginPath();
-			ctx.fillStyle = withAlpha(cinnabarHex, pinA);
-			ctx.arc(sx, sy, r, 0, Math.PI * 2);
-			ctx.fill();
-			ctx.beginPath();
-			ctx.strokeStyle = withAlpha(paperHex, pinA);
-			ctx.lineWidth = 1.15;
-			ctx.arc(sx, sy, r + 2, 0, Math.PI * 2);
-			ctx.stroke();
-			if (pin.slug === selectedSlug || pin.slug === hoverDest.current || active) {
-				ctx.fillStyle = withAlpha(paperHex, pinA);
-				ctx.fillText(pin.nameZh, sx + 9, sy - 1);
+			ctx.textBaseline = "middle";
+			ctx.font = "500 12px \"Noto Serif SC\", serif";
+			ctx.textAlign = "left";
+			for (const pin of pins) {
+				const { sx, sy } = toS(pin.x, pin.y);
+				const pinA = focusedIdx == null || pin.provinceIndex === focusedIdx ? 1 : 1 - fade * .72;
+				const active = pin.slug === selectedSlug || saved.includes(pin.slug);
+				const r = active ? 5 : 3.6;
+				if (pin.slug === selectedSlug) {
+					ctx.beginPath();
+					ctx.strokeStyle = withAlpha(cinnabarHex, .5 * pinA);
+					ctx.lineWidth = 1;
+					ctx.arc(sx, sy, r + 7, 0, Math.PI * 2);
+					ctx.stroke();
+				}
+				ctx.beginPath();
+				ctx.fillStyle = withAlpha(cinnabarHex, pinA);
+				ctx.arc(sx, sy, r, 0, Math.PI * 2);
+				ctx.fill();
+				ctx.beginPath();
+				ctx.strokeStyle = withAlpha(paperHex, pinA);
+				ctx.lineWidth = 1.15;
+				ctx.arc(sx, sy, r + 2, 0, Math.PI * 2);
+				ctx.stroke();
+				if (pin.slug === selectedSlug || pin.slug === hoverDest.current || active) {
+					ctx.fillStyle = withAlpha(paperHex, pinA);
+					ctx.fillText(pin.nameZh, sx + 9, sy - 1);
+				}
 			}
 		}
 		const labelIndex = hoverIndex ?? selectedIndex;
@@ -840,6 +860,8 @@ export const ChinaMap = forwardRef<ChinaMapHandle, Props>(function ChinaMap(
 		insetSpecs,
 		cityInteriors,
 		pins,
+		railPaths,
+		mode,
 		saved,
 		selectedIndex,
 		selectedSlug
@@ -978,7 +1000,7 @@ export const ChinaMap = forwardRef<ChinaMapHandle, Props>(function ChinaMap(
 		const destR = 18 / viewRef.current.scale;
 		let dest = null;
 		let destD = destR * destR;
-		for (const p of pins) {
+		if (mode === "travel") for (const p of pins) {
 			const dd = (p.x - wr.x) ** 2 + (p.y - wr.y) ** 2;
 			if (dd < destD) {
 				destD = dd;
