@@ -9,7 +9,7 @@ import {
 } from "react";
 import { destGeo } from "@/data/dest-geo";
 import { destinations } from "@/data/destinations";
-import { hsrLines } from "@/data/hsr-lines";
+import { hsrLines, hsrStations } from "@/data/hsr-lines";
 import { shortProvinceName, toQuantized } from "@/lib/geo";
 import { cn } from "@/lib/utils";
 
@@ -281,12 +281,33 @@ export const ChinaMap = forwardRef<ChinaMapHandle, Props>(function ChinaMap(
 		data.q
 	]);
 	const railPaths = useMemo(() => {
-		return hsrLines.map((line) =>
-			line.map((pt) => {
+		const spanMax = 0.55;
+		return hsrLines.map((line) => {
+			const dense: [number, number][] = [];
+			for (let i = 0; i < line.length; i++) {
+				const a = line[i];
+				if (!a) continue;
+				dense.push(a);
+				const b = line[i + 1];
+				if (!b) continue;
+				const d = Math.hypot(b[0] - a[0], b[1] - a[1]);
+				const n = Math.max(1, Math.ceil(d / spanMax));
+				for (let s = 1; s < n; s++) {
+					const t = s / n;
+					dense.push([a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t]);
+				}
+			}
+			return dense.map((pt) => {
 				const q = toQuantized(pt[0], pt[1], data.bounds, data.q);
 				return [q.x, q.y] as [number, number];
-			}),
-		);
+			});
+		});
+	}, [data.bounds, data.q]);
+	const railStops = useMemo(() => {
+		return hsrStations.map((st) => {
+			const q = toQuantized(st.lon, st.lat, data.bounds, data.q);
+			return { name: st.name, x: q.x, y: q.y };
+		});
 	}, [data.bounds, data.q]);
 	const landBox = useMemo(() => {
 		let minx = Infinity, miny = Infinity, maxx = -Infinity, maxy = -Infinity;
@@ -696,8 +717,31 @@ export const ChinaMap = forwardRef<ChinaMapHandle, Props>(function ChinaMap(
 		if (mode === "rail") {
 			ctx.lineJoin = "round";
 			ctx.lineCap = "round";
-			strokePolylines(railPaths, withAlpha(paperHex, .22 * (1 - fade * .4)), 3.2);
-			strokePolylines(railPaths, withAlpha(cinnabarHex, .92 * (1 - fade * .35)), 1.55);
+			strokePolylines(railPaths, withAlpha(paperHex, .18 * (1 - fade * .4)), 2.6);
+			strokePolylines(railPaths, withAlpha(cinnabarHex, .9 * (1 - fade * .3)), 1.2);
+			const zoomed = viewRef.current.scale > fit.scale * 1.45;
+			const placed: { x: number; y: number }[] = [];
+			ctx.textBaseline = "middle";
+			ctx.font = zoomed ? "500 12px \"Noto Serif SC\", serif" : "500 11px \"Noto Serif SC\", serif";
+			ctx.textAlign = "left";
+			for (const st of railStops) {
+				const { sx, sy } = toS(st.x, st.y);
+				const a = 1 - fade * .28;
+				ctx.beginPath();
+				ctx.fillStyle = withAlpha(cinnabarHex, a);
+				ctx.arc(sx, sy, zoomed ? 2.6 : 2.15, 0, Math.PI * 2);
+				ctx.fill();
+				ctx.beginPath();
+				ctx.strokeStyle = withAlpha(paperHex, a);
+				ctx.lineWidth = 1;
+				ctx.arc(sx, sy, zoomed ? 4 : 3.4, 0, Math.PI * 2);
+				ctx.stroke();
+				const minGap = zoomed ? 26 : 38;
+				if (placed.some((p) => Math.hypot(p.x - sx, p.y - sy) < minGap)) continue;
+				placed.push({ x: sx, y: sy });
+				ctx.fillStyle = withAlpha(paperHex, a);
+				ctx.fillText(st.name, sx + 7, sy - 1);
+			}
 		} else {
 			const savedPins = pins.filter((p) => saved.includes(p.slug)).slice().sort((a, b) => destinations.findIndex((d) => d.slug === a.slug) - destinations.findIndex((d) => d.slug === b.slug));
 			if (savedPins.length > 1) {
@@ -861,6 +905,7 @@ export const ChinaMap = forwardRef<ChinaMapHandle, Props>(function ChinaMap(
 		cityInteriors,
 		pins,
 		railPaths,
+		railStops,
 		mode,
 		saved,
 		selectedIndex,
