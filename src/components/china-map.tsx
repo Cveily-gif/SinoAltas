@@ -281,35 +281,39 @@ export const ChinaMap = forwardRef<ChinaMapHandle, Props>(function ChinaMap(
 		data.q
 	]);
 	const railPaths = useMemo(() => {
-		const spanMax = 0.55;
-		return hsrCorridors.map((c) => {
-			const dense: [number, number][] = [];
-			for (let i = 0; i < c.pts.length; i++) {
-				const a = c.pts[i];
-				if (!a) continue;
-				dense.push(a);
-				const b = c.pts[i + 1];
-				if (!b) continue;
-				const d = Math.hypot(b[0] - a[0], b[1] - a[1]);
-				const n = Math.max(1, Math.ceil(d / spanMax));
-				for (let s = 1; s < n; s++) {
-					const t = s / n;
-					dense.push([a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t]);
+		const smooth = (pts: [number, number][], segs: number) => {
+			if (pts.length < 2) return pts;
+			const out: [number, number][] = [];
+			for (let i = 0; i < pts.length - 1; i++) {
+				const p0 = pts[Math.max(0, i - 1)]!;
+				const p1 = pts[i]!;
+				const p2 = pts[i + 1]!;
+				const p3 = pts[Math.min(pts.length - 1, i + 2)]!;
+				for (let s = 0; s < segs; s++) {
+					const t = s / segs;
+					const t2 = t * t;
+					const t3 = t2 * t;
+					out.push([
+						0.5 * (2 * p1[0] + (-p0[0] + p2[0]) * t + (2 * p0[0] - 5 * p1[0] + 4 * p2[0] - p3[0]) * t2 + (-p0[0] + 3 * p1[0] - 3 * p2[0] + p3[0]) * t3),
+						0.5 * (2 * p1[1] + (-p0[1] + p2[1]) * t + (2 * p0[1] - 5 * p1[1] + 4 * p2[1] - p3[1]) * t2 + (-p0[1] + 3 * p1[1] - 3 * p2[1] + p3[1]) * t3),
+					]);
 				}
 			}
-			return {
-				rank: c.rank,
-				line: dense.map((pt) => {
-					const q = toQuantized(pt[0], pt[1], data.bounds, data.q);
-					return [q.x, q.y] as [number, number];
-				}),
-			};
-		});
+			out.push(pts[pts.length - 1]!);
+			return out;
+		};
+		return hsrCorridors.map((c) => ({
+			rank: c.rank,
+			line: smooth(c.pts, 8).map((pt) => {
+				const q = toQuantized(pt[0], pt[1], data.bounds, data.q);
+				return [q.x, q.y] as [number, number];
+			}),
+		}));
 	}, [data.bounds, data.q]);
 	const railStops = useMemo(() => {
 		return hsrStations.map((st) => {
 			const q = toQuantized(st.lon, st.lat, data.bounds, data.q);
-			return { name: st.name, x: q.x, y: q.y };
+			return { name: st.name, x: q.x, y: q.y, scale: st.scale };
 		});
 	}, [data.bounds, data.q]);
 	const landBox = useMemo(() => {
@@ -760,9 +764,8 @@ export const ChinaMap = forwardRef<ChinaMapHandle, Props>(function ChinaMap(
 				}
 			}
 			const zoomed = fade > .18 || viewRef.current.scale > fit.scale * 1.45;
-			const placed: { x: number; y: number }[] = [];
+			const placed: { x: number; y: number; w: number }[] = [];
 			ctx.textBaseline = "middle";
-			ctx.font = zoomed ? "500 12px \"Noto Serif SC\", serif" : "500 11px \"Noto Serif SC\", serif";
 			ctx.textAlign = "left";
 			const stops = railStops.map((st) => {
 				let local = false;
@@ -772,26 +775,47 @@ export const ChinaMap = forwardRef<ChinaMapHandle, Props>(function ChinaMap(
 					local = inside;
 				}
 				return { ...st, local };
-			}).sort((a, b) => Number(b.local) - Number(a.local));
+			}).sort((a, b) => (Number(b.local) - Number(a.local)) || b.scale - a.scale);
 			for (const st of stops) {
+				const inProv = fade > .18 && rings;
+				if (!st.local && inProv && st.scale < 2) continue;
+				if (!inProv && st.scale < 2) continue;
 				const { sx, sy } = toS(st.x, st.y);
-				const a = st.local ? 1 : fade > .18 ? .28 : .92;
-				if (a < .12) continue;
+				const a = st.local ? 1 : inProv ? (st.scale === 3 ? .32 : .18) : 1;
+				const r = st.local
+					? st.scale === 3 ? 5.2 : st.scale === 2 ? 3.5 : 2.05
+					: st.scale === 3 ? 2.7 : 2.05;
 				ctx.beginPath();
 				ctx.fillStyle = withAlpha(cinnabarHex, a);
-				ctx.arc(sx, sy, st.local ? 3 : zoomed ? 2.4 : 2.05, 0, Math.PI * 2);
+				ctx.arc(sx, sy, r, 0, Math.PI * 2);
 				ctx.fill();
 				ctx.beginPath();
 				ctx.strokeStyle = withAlpha(paperHex, a);
-				ctx.lineWidth = 1;
-				ctx.arc(sx, sy, st.local ? 4.6 : zoomed ? 3.8 : 3.3, 0, Math.PI * 2);
+				ctx.lineWidth = st.scale === 3 ? 1.35 : 1;
+				ctx.arc(sx, sy, r + (st.scale === 3 ? 2.6 : 1.5), 0, Math.PI * 2);
 				ctx.stroke();
-				const minGap = st.local ? 18 : zoomed ? 26 : 38;
-				if (placed.some((p) => Math.hypot(p.x - sx, p.y - sy) < minGap)) continue;
-				if (!st.local && fade > .18) continue;
-				placed.push({ x: sx, y: sy });
+				if (st.scale === 3 && st.local) {
+					ctx.beginPath();
+					ctx.strokeStyle = withAlpha(cinnabarHex, .4);
+					ctx.lineWidth = 1;
+					ctx.arc(sx, sy, r + 6.5, 0, Math.PI * 2);
+					ctx.stroke();
+				}
+				const showLabel = st.local || (!inProv && st.scale >= 2);
+				if (!showLabel) continue;
+				ctx.font = st.scale === 3
+					? "500 13px \"Noto Serif SC\", serif"
+					: st.scale === 2
+						? "500 12px \"Noto Serif SC\", serif"
+						: "500 11px \"Noto Serif SC\", serif";
+				const tw = ctx.measureText(st.name).width;
+				const minGap = st.local && st.scale === 1 ? 16 : 22;
+				if (placed.some((p) => Math.abs(p.x - sx) < (p.w + tw) * .5 + minGap && Math.abs(p.y - sy) < minGap)) {
+					if (!st.local || st.scale === 1) continue;
+				}
+				placed.push({ x: sx, y: sy, w: tw });
 				ctx.fillStyle = withAlpha(paperHex, a);
-				ctx.fillText(st.name, sx + 7, sy - 1);
+				ctx.fillText(st.name, sx + r + 5, sy - 1);
 			}
 		} else {
 			const savedPins = pins.filter((p) => saved.includes(p.slug)).slice().sort((a, b) => destinations.findIndex((d) => d.slug === a.slug) - destinations.findIndex((d) => d.slug === b.slug));
