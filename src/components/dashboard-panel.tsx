@@ -244,11 +244,8 @@ export function DashboardPanel({
           </div>
         ) : (
           <div className="rise-in mt-5">
-            <p className="font-display text-lg leading-snug text-paper">
-              点一省，入其境。
-            </p>
-            <p className="mt-3 text-sm leading-relaxed text-paper/75">
-              朱砂是城。滚轮可近观。若要回来，点向海面即可。
+            <p className="font-display text-lg leading-snug text-paper/90">
+              一省一气韵，点开便见。
             </p>
             {hoverProv ? (
               <p className="mt-4 text-sm text-stone-light">
