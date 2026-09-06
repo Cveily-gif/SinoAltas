@@ -266,6 +266,35 @@ const C = {
   zigong: [104.773, 29.339],
   xichang: [102.259, 27.886],
   bazhong: [106.748, 31.858],
+  keelung: [121.739, 25.128],
+  taipei: [121.565, 25.033],
+  taoyuan: [121.301, 24.993],
+  hsinchu: [120.968, 24.804],
+  miaoli: [120.821, 24.565],
+  taichung: [120.647, 24.147],
+  changhua: [120.542, 24.081],
+  douliu: [120.538, 23.709],
+  chiayi: [120.449, 23.48],
+  tainan: [120.213, 22.997],
+  kaohsiung: [120.302, 22.627],
+  pingtung: [120.488, 22.682],
+  fangliao: [120.593, 22.365],
+  taitung: [121.146, 22.758],
+  yuli: [121.312, 23.336],
+  hualien: [121.604, 23.973],
+  suao: [121.851, 24.594],
+  yilan: [121.753, 24.755],
+  luodong: [121.772, 24.677],
+  ruifang: [121.806, 25.109],
+  tyn_hsr: [121.215, 25.013],
+  hsc_hsr: [121.013, 24.808],
+  mia_hsr: [120.825, 24.606],
+  txg_hsr: [120.616, 24.112],
+  chg_hsr: [120.476, 23.874],
+  yun_hsr: [120.416, 23.736],
+  cyi_hsr: [120.323, 23.459],
+  tnn_hsr: [120.286, 22.925],
+  zuoying: [120.308, 22.687],
 } as const;
 
 type City = keyof typeof C;
@@ -538,6 +567,35 @@ const META: Record<City, { name: string; scale: HsrScale }> = {
   zigong: { name: "自贡", scale: 1 },
   xichang: { name: "西昌", scale: 1 },
   bazhong: { name: "巴中", scale: 1 },
+  keelung: { name: "基隆", scale: 1 },
+  taipei: { name: "台北", scale: 3 },
+  taoyuan: { name: "桃园", scale: 2 },
+  hsinchu: { name: "新竹", scale: 2 },
+  miaoli: { name: "苗栗", scale: 1 },
+  taichung: { name: "台中", scale: 2 },
+  changhua: { name: "彰化", scale: 1 },
+  douliu: { name: "斗六", scale: 1 },
+  chiayi: { name: "嘉义", scale: 1 },
+  tainan: { name: "台南", scale: 2 },
+  kaohsiung: { name: "高雄", scale: 2 },
+  pingtung: { name: "屏东", scale: 1 },
+  fangliao: { name: "枋寮", scale: 1 },
+  taitung: { name: "台东", scale: 1 },
+  yuli: { name: "玉里", scale: 1 },
+  hualien: { name: "花莲", scale: 1 },
+  suao: { name: "苏澳", scale: 1 },
+  yilan: { name: "宜兰", scale: 1 },
+  luodong: { name: "罗东", scale: 1 },
+  ruifang: { name: "瑞芳", scale: 1 },
+  tyn_hsr: { name: "桃园高铁", scale: 1 },
+  hsc_hsr: { name: "新竹高铁", scale: 1 },
+  mia_hsr: { name: "苗栗高铁", scale: 1 },
+  txg_hsr: { name: "台中高铁", scale: 1 },
+  chg_hsr: { name: "彰化高铁", scale: 1 },
+  yun_hsr: { name: "云林", scale: 1 },
+  cyi_hsr: { name: "嘉义高铁", scale: 1 },
+  tnn_hsr: { name: "台南高铁", scale: 1 },
+  zuoying: { name: "左营", scale: 1 },
 };
 
 const path = (...keys: City[]) => keys.map((k) => [...C[k]] as [number, number]);
@@ -627,11 +685,19 @@ export const hsrCorridors: { rank: HsrRank; pts: [number, number][] }[] = [
   B("nanchang", "jian", "ganzhou"),
   B("jinan", "taian", "jining", "heze"),
   B("liuzhou", "laibin", "nanning"),
+  // 台湾高铁
+  T("taipei", "tyn_hsr", "hsc_hsr", "mia_hsr", "txg_hsr", "chg_hsr", "yun_hsr", "cyi_hsr", "tnn_hsr", "zuoying"),
+  // 台铁纵贯线
+  B("keelung", "taipei", "taoyuan", "hsinchu", "miaoli", "taichung", "changhua", "douliu", "chiayi", "tainan", "kaohsiung", "pingtung", "fangliao"),
+  // 台铁南迴 · 台东 · 北迴 · 宜兰
+  B("fangliao", "taitung", "yuli", "hualien", "suao", "luodong", "yilan", "ruifang", "keelung"),
 ];
 
-export const hsrStations = (Object.keys(C) as City[]).map((k) => ({
-  name: META[k].name,
-  lon: C[k][0],
-  lat: C[k][1],
-  scale: META[k].scale,
-}));
+export const hsrStations = (Object.keys(C) as City[])
+  .filter((k) => !k.endsWith("_hsr"))
+  .map((k) => ({
+    name: META[k].name,
+    lon: C[k][0],
+    lat: C[k][1],
+    scale: META[k].scale,
+  }));
