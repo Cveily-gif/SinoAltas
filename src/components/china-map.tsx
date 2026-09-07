@@ -10,7 +10,7 @@ import {
 import { destGeo } from "@/data/dest-geo";
 import { destinations } from "@/data/destinations";
 import { hsrCorridors, hsrStations } from "@/data/hsr-lines";
-import { locPlace, locProvinceName } from "@/data/i18n/localize";
+import { locPlace, locProvinceLockup } from "@/data/i18n/localize";
 import { copy } from "@/data/i18n/copy";
 import { shortProvinceName, toQuantized } from "@/lib/geo";
 import type { Locale } from "@/lib/locale";
@@ -872,15 +872,35 @@ export const ChinaMap = forwardRef<ChinaMapHandle, Props>(function ChinaMap(
 			const prov = data.provinces[labelIndex];
 			if (prov) {
 				const { sx, sy } = toS(prov.cp[0], prov.cp[1]);
-				const name = locProvinceName(prov.id, shortProvinceName(prov.name), locale);
-				ctx.font = "500 14px \"Noto Serif SC\", serif";
-				const tw = ctx.measureText(name).width;
-				ctx.fillStyle = withAlpha(inkHex, .78);
-				ctx.fillRect(sx - tw / 2 - 8, sy - 26, tw + 16, 22);
-				ctx.fillStyle = paper;
+				const lock = locProvinceLockup(prov.id, shortProvinceName(prov.name), locale);
+				ctx.save();
 				ctx.textAlign = "center";
-				ctx.fillText(name, sx, sy - 15);
-				ctx.textAlign = "left";
+				ctx.textBaseline = "top";
+				ctx.font = "500 13px \"Noto Serif SC\", serif";
+				const tw1 = ctx.measureText(lock.hyphen).width;
+				ctx.font = "500 10px \"Cormorant Garamond\", serif";
+				const gloss = lock.gloss.toUpperCase();
+				const tw2 = gloss ? ctx.measureText(gloss).width : 0;
+				const tw = Math.max(tw1, tw2);
+				const padX = 10;
+				const padY = 6;
+				const line1 = 16;
+				const line2 = gloss ? 13 : 0;
+				const h = padY + line1 + (gloss ? 2 + line2 : 0) + padY;
+				const wBox = tw + padX * 2;
+				const left = sx - wBox / 2;
+				const top = sy - h - 8;
+				ctx.fillStyle = withAlpha(inkHex, .78);
+				ctx.fillRect(left, top, wBox, h);
+				ctx.fillStyle = paper;
+				ctx.font = "500 13px \"Noto Serif SC\", serif";
+				ctx.fillText(lock.hyphen, sx, top + padY);
+				if (gloss) {
+					ctx.fillStyle = withAlpha("#c4a484", .95);
+					ctx.font = "500 10px \"Cormorant Garamond\", serif";
+					ctx.fillText(gloss, sx, top + padY + line1 + 1);
+				}
+				ctx.restore();
 			}
 		}
 		if (fade > .35 && hoverCity.current && selectedIndex != null) {
@@ -920,9 +940,10 @@ export const ChinaMap = forwardRef<ChinaMapHandle, Props>(function ChinaMap(
 			insetLayoutRef.current = boxes;
 			ctx.save();
 			ctx.font = compact ? "500 9px \"Noto Serif SC\", serif" : "500 10px \"Noto Serif SC\", serif";
-			ctx.textAlign = "left";
-			ctx.fillStyle = withAlpha(paperHex, .42 * alpha);
-			ctx.fillText(compact ? copy[locale].hkMacaoShort : copy[locale].hkMacao, x0, y0 - (compact ? 5 : 7));
+			ctx.textAlign = "right";
+			ctx.fillStyle = withAlpha(paperHex, .7 * alpha);
+			const captionX = stacked ? x0 + boxW : x0 + pairW;
+			ctx.fillText(compact ? copy[locale].hkMacaoShort : copy[locale].hkMacao, captionX, y0 - (compact ? 5 : 7));
 			for (const box of boxes) {
 				const active = hoverIndex === box.index || selectedIndex === box.index;
 				ctx.beginPath();
@@ -1262,11 +1283,15 @@ export const ChinaMap = forwardRef<ChinaMapHandle, Props>(function ChinaMap(
 		viewRef.current = { ...fitRef.current };
 		scheduleDraw();
 	};
-	const hoverName = cityBadge
-		? locPlace(cityBadge, locale)
-		: hoverIndex != null
-			? locProvinceName(data.provinces[hoverIndex]?.id ?? "", shortProvinceName(data.provinces[hoverIndex]?.name ?? ""), locale)
-			: "";
+	const hoverCityName = cityBadge ? locPlace(cityBadge, locale) : "";
+	const hoverLock =
+		!cityBadge && hoverIndex != null && data.provinces[hoverIndex]
+			? locProvinceLockup(
+					data.provinces[hoverIndex].id,
+					shortProvinceName(data.provinces[hoverIndex].name),
+					locale,
+				)
+			: null;
 
 	return (
 		<div
@@ -1283,9 +1308,20 @@ export const ChinaMap = forwardRef<ChinaMapHandle, Props>(function ChinaMap(
 			onDoubleClick={onDoubleClick}
 		>
 			<canvas ref={canvasRef} className="block size-full" />
-			{hoverName ? (
-				<div className="pointer-events-none absolute left-4 top-4 rounded-md bg-ink/80 px-3 py-1.5 text-sm text-paper sm:left-5">
-					{hoverName}
+			{hoverCityName || hoverLock ? (
+				<div className="pointer-events-none absolute left-4 top-4 rounded-md bg-ink/80 px-3 py-1.5 text-paper sm:left-5">
+					{hoverCityName ? (
+						<p className="text-sm">{hoverCityName}</p>
+					) : (
+						<>
+							<p className="text-sm">{hoverLock?.hyphen}</p>
+							{hoverLock?.gloss ? (
+								<p className="text-latin mt-0.5 text-[11px] tracking-[0.16em] text-stone-light uppercase">
+									{hoverLock.gloss}
+								</p>
+							) : null}
+						</>
+					)}
 				</div>
 			) : null}
 		</div>

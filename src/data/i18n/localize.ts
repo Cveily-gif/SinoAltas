@@ -6,7 +6,7 @@ import {
   regionBlurbEn,
   seasonEn,
 } from "@/data/i18n/content-en";
-import { placeNameEn, provinceBlurbEn, provinceEn } from "@/data/i18n/places";
+import { placeNameEn, provinceBlurbEn, provinceLockup } from "@/data/i18n/places";
 import type { Locale } from "@/lib/locale";
 
 export function locDest(d: Destination, locale: Locale): Destination {
@@ -46,9 +46,16 @@ export function locJournal(a: JournalArticle, locale: Locale): JournalArticle {
   return { ...a, ...en };
 }
 
+export function locProvinceLockup(id: string, zhName: string, locale: Locale) {
+  return provinceLockup(id, zhName, locale);
+}
+
 export function locProvinceName(id: string, zhName: string, locale: Locale) {
-  if (locale !== "en") return zhName;
-  return provinceEn[id] ?? placeNameEn(zhName);
+  return provinceLockup(id, zhName, locale).hyphen;
+}
+
+export function locProvinceFull(id: string, zhName: string, locale: Locale) {
+  return provinceLockup(id, zhName, locale).full;
 }
 
 export function locProvinceBlurb(id: string, zh: string | undefined, locale: Locale) {

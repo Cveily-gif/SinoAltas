@@ -37,6 +37,70 @@ export const provinceEn: Record<string, string> = {
   "82": "Macao",
 };
 
+/** Character-etymology epithets, not official translations. */
+export const provinceGloss: Record<string, string> = {
+  "11": "Northern Capital",
+  "12": "Heaven's Ford",
+  "13": "Northern River",
+  "14": "Western Mountains",
+  "15": "Inner Steppe",
+  "21": "Distant Peace",
+  "22": "Auspicious Forest",
+  "23": "Black Dragon River",
+  "31": "Upon the Sea",
+  "32": "Jiangning & Suzhou",
+  "33": "Crooked River",
+  "34": "Anqing & Huizhou",
+  "35": "Fuzhou & Jianzhou",
+  "36": "Western River",
+  "37": "Eastern Mountains",
+  "41": "Southern River",
+  "42": "Northern Lake",
+  "43": "Southern Lake",
+  "44": "Eastern Expanse",
+  "45": "Western Expanse",
+  "46": "Southern Sea",
+  "50": "Double Celebration",
+  "51": "Four Rivers",
+  "52": "Precious Prefecture",
+  "53": "Southern Clouds",
+  "54": "Western Treasury",
+  "61": "Western Pass",
+  "62": "Ganzhou & Suzhou",
+  "63": "Azure Sea",
+  "64": "Pacified Xia",
+  "65": "New Frontier",
+  "71": "Terraced Bay",
+  "81": "Fragrant Harbour",
+  "82": "Inlet Gate",
+};
+
+export type ProvinceLockup = {
+  zh: string;
+  en: string;
+  gloss: string;
+  hyphen: string;
+  full: string;
+};
+
+export function provinceLockup(
+  id: string,
+  zhName: string,
+  locale: "zh" | "en" = "zh",
+): ProvinceLockup {
+  const zh = zhName;
+  const en = provinceEn[id] ?? zhName;
+  const gloss = provinceGloss[id] ?? "";
+  const hyphen = locale === "en" ? `${en}-${zh}` : `${zh}-${en}`;
+  return {
+    zh,
+    en,
+    gloss,
+    hyphen,
+    full: gloss ? `${hyphen} / ${gloss}` : hyphen,
+  };
+}
+
 export const provinceBlurbEn: Record<string, string> = {
   "11": "An axis, palaces, and walls. Treat a capital as a rite you can walk to the end of.",
   "12": "The Hai River and a compromise of concessions. Another northern face, just south of Beijing.",
@@ -468,3 +532,4 @@ export const cityEn: Record<string, string> = {
 export function placeNameEn(zh: string) {
   return cityEn[zh] ?? zh;
 }
+

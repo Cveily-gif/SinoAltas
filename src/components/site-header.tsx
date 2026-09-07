@@ -20,22 +20,40 @@ export function SiteHeader() {
     setOpen(false);
   }, [pathname]);
 
-  const LangToggle = (
-    <button
-      type="button"
-      onClick={() => setLocale(locale === "zh" ? "en" : "zh")}
-      className={cn(
-        "inline-flex h-11 min-w-11 items-center justify-center gap-1 px-2 text-[11px] tracking-[0.18em]",
-        dark ? "text-paper/70 hover:text-paper" : "text-stone hover:text-ink",
-      )}
+  const LangToggle = ({ tone }: { tone: "dark" | "light" }) => (
+    <div
+      role="group"
       aria-label={locale === "zh" ? "Switch to English" : "切换为中文"}
+      className={cn(
+        "inline-flex h-9 items-center rounded-md p-0.5",
+        tone === "dark" ? "bg-paper/12" : "bg-ink/8",
+      )}
     >
-      <span className={locale === "zh" ? "text-cinnabar" : undefined}>中</span>
-      <span className="opacity-40">/</span>
-      <span className={cn("text-latin", locale === "en" ? "text-cinnabar" : undefined)}>
-        EN
-      </span>
-    </button>
+      {([
+        { id: "zh" as const, label: "中" },
+        { id: "en" as const, label: "EN" },
+      ]).map((opt) => (
+        <button
+          key={opt.id}
+          type="button"
+          onClick={() => setLocale(opt.id)}
+          className={cn(
+            "inline-flex h-8 min-w-8 items-center justify-center rounded-sm px-2.5 text-[11px] tracking-[0.16em]",
+            opt.id === "en" && "text-latin",
+            locale === opt.id
+              ? tone === "dark"
+                ? "bg-paper/18 text-paper"
+                : "bg-ink text-paper"
+              : tone === "dark"
+                ? "text-paper/50 hover:text-paper"
+                : "text-stone hover:text-ink",
+          )}
+          aria-pressed={locale === opt.id}
+        >
+          {opt.label}
+        </button>
+      ))}
+    </div>
   );
 
   return (
@@ -101,7 +119,9 @@ export function SiteHeader() {
         </nav>
 
         <div className="flex items-center gap-1">
-          <div className="hidden lg:block">{LangToggle}</div>
+          <div className="hidden lg:block">
+            <LangToggle tone={dark ? "dark" : "light"} />
+          </div>
           <Dialog.Root open={open} onOpenChange={setOpen}>
             <Dialog.Trigger asChild>
               <button
@@ -120,7 +140,7 @@ export function SiteHeader() {
                     {t.brand}
                   </Dialog.Title>
                   <div className="flex items-center">
-                    {LangToggle}
+                    <LangToggle tone="light" />
                     <Dialog.Close asChild>
                       <button
                         type="button"

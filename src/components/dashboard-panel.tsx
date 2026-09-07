@@ -11,8 +11,10 @@ import {
   locDest,
   locPlace,
   locProvinceBlurb,
-  locProvinceName,
+  locProvinceFull,
+  locProvinceLockup,
 } from "@/data/i18n/localize";
+import { shortProvinceName } from "@/lib/geo";
 import { useCopy, useLocale } from "@/lib/locale";
 import {
   composeItinerary,
@@ -125,6 +127,9 @@ export function DashboardPanel({
     ? regions.find((r) => r.id === meta.region)
     : undefined;
   const viewDest = dest ? locDest(dest, locale) : undefined;
+  const provinceLock = province
+    ? locProvinceLockup(province.id, shortProvinceName(province.name), locale)
+    : null;
 
   return (
     <aside
@@ -207,9 +212,12 @@ export function DashboardPanel({
             <p className="text-latin text-xs tracking-[0.24em] uppercase text-stone-light">
               {region?.nameEn ?? "Province"}
             </p>
-            <h3 className="mt-1 font-display text-3xl">
-              {locProvinceName(province.id, province.name.replace(/维吾尔自治区|壮族自治区|回族自治区|特别行政区|自治区|省|市/g, ""), locale)}
-            </h3>
+            <h3 className="mt-1 font-display text-3xl">{provinceLock?.hyphen}</h3>
+            {provinceLock?.gloss ? (
+              <p className="text-latin mt-1.5 text-sm tracking-[0.18em] text-cinnabar uppercase">
+                {provinceLock.gloss}
+              </p>
+            ) : null}
             <p className="mt-3 text-sm leading-relaxed text-paper/80">
               {locProvinceBlurb(province.id, meta?.blurb, locale)}
             </p>
@@ -263,7 +271,7 @@ export function DashboardPanel({
             </p>
             {hoverProv ? (
               <p className="mt-4 text-sm text-stone-light">
-                {locProvinceName(hoverProv.id, hoverProv.name.replace(/维吾尔自治区|壮族自治区|回族自治区|特别行政区|自治区|省|市/g, ""), locale)}
+                {locProvinceFull(hoverProv.id, shortProvinceName(hoverProv.name), locale)}
               </p>
             ) : null}
             <div className="mt-5 grid grid-cols-3 gap-3 border-y border-paper/10 py-4">
