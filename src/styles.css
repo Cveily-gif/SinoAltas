@@ -108,6 +108,11 @@
     scrollbar-color: color-mix(in oklab, var(--color-paper) 22%, transparent)
       transparent;
   }
+
+  .stay-range {
+    accent-color: var(--color-cinnabar);
+    height: 0.35rem;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

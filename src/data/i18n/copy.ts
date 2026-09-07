@@ -82,11 +82,20 @@ export type Copy = {
   mineSaved: string;
   mineNeedName: string;
   mineNeedProvince: string;
+  mineNeedCity: string;
+  mineHeadline: string;
   mineNameZh: string;
   mineNameEn: string;
   mineProvince: string;
+  mineCity: string;
   mineSeasons: string;
   mineDays: string;
+  mineStayDay: string;
+  mineStayLong: string;
+  mineStayUnit: string;
+  mineAddHl: string;
+  mineAddItin: string;
+  mineRemoveRow: string;
   mineIntensity: string;
   mineTagline: string;
   mineExcerpt: string;
@@ -220,8 +229,8 @@ export const copy: Record<"zh" | "en", Copy> = {
     destBack: "目的地",
     destFurther: "延伸阅读：",
     destBelt: "地带",
-    highlights: "三处",
-    skeleton: "三日骨架",
+    highlights: "精华",
+    skeleton: "行程",
     practical: "行前",
     related: "附近可走",
     alsoRead: "手记",
@@ -229,7 +238,7 @@ export const copy: Record<"zh" | "en", Copy> = {
     mineKicker: "Mine",
     mineTitle: "记下你的城",
     mineLead:
-      "体例与图志相同：一句印象、一段正文、三处、三日。先写在这台设备上，云端留给以后。",
+      "先选省，再选城，然后写下你记得的。点落在图上；省会与大城出现在全国，其余只在省图里。先存在这台设备上。",
     mineHint: "不会上传到服务器。清掉此站缓存之前，关闭浏览器也不会丢。",
     mineSubmit: "收进此机",
     mineEdit: "改一改",
@@ -239,11 +248,20 @@ export const copy: Record<"zh" | "en", Copy> = {
     mineSaved: "已记在此机",
     mineNeedName: "先写下城的名字。",
     mineNeedProvince: "选一个省份，图幅才知道它落在何处。",
+    mineNeedCity: "选一座地级市，点才会落在图上。",
+    mineHeadline: "标题",
     mineNameZh: "中文名",
     mineNameEn: "英文名",
     mineProvince: "省份",
+    mineCity: "地级市",
     mineSeasons: "季节",
-    mineDays: "建议停留",
+    mineDays: "停留",
+    mineStayDay: "日内",
+    mineStayLong: "长期",
+    mineStayUnit: "日",
+    mineAddHl: "再记一处",
+    mineAddItin: "再写一日",
+    mineRemoveRow: "去掉",
     mineIntensity: "强度",
     mineTagline: "一句印象",
     mineExcerpt: "摘句",
@@ -376,8 +394,8 @@ export const copy: Record<"zh" | "en", Copy> = {
     destBack: "Places",
     destFurther: "Further reading:",
     destBelt: "Belt",
-    highlights: "Three things",
-    skeleton: "Three-day spine",
+    highlights: "Essence",
+    skeleton: "Itinerary",
     practical: "Before you go",
     related: "Nearby",
     alsoRead: "Journal",
@@ -385,7 +403,7 @@ export const copy: Record<"zh" | "en", Copy> = {
     mineKicker: "Mine",
     mineTitle: "Write a city",
     mineLead:
-      "The same form as the atlas: an impression, a body, three things, three days. Kept on this device for now; a personal store can wait.",
+      "Choose a province, then a city, then write what you remember. The pin falls on the atlas — capitals and large cities on the country, the rest only inside the province. Kept on this device for now.",
     mineHint:
       "Nothing is sent to a server. It remains until this browser forgets the site.",
     mineSubmit: "Keep on this device",
@@ -396,11 +414,20 @@ export const copy: Record<"zh" | "en", Copy> = {
     mineSaved: "Kept on this device",
     mineNeedName: "Give the city a name first.",
     mineNeedProvince: "Choose a province so the atlas knows where it falls.",
+    mineNeedCity: "Choose a prefecture so the pin can fall.",
+    mineHeadline: "Title",
     mineNameZh: "Chinese name",
     mineNameEn: "English name",
     mineProvince: "Province",
+    mineCity: "Prefecture",
     mineSeasons: "Seasons",
     mineDays: "Stay",
+    mineStayDay: "Within a day",
+    mineStayLong: "A long stay",
+    mineStayUnit: "days",
+    mineAddHl: "Another note",
+    mineAddItin: "Another day",
+    mineRemoveRow: "Remove",
     mineIntensity: "Pace",
     mineTagline: "A line of impression",
     mineExcerpt: "Excerpt",

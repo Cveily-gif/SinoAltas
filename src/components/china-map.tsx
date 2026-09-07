@@ -47,6 +47,7 @@ export type DestPin = {
   x: number;
   y: number;
   provinceIndex: number;
+  national: boolean;
 };
 
 export type ChinaMapHandle = {
@@ -282,33 +283,39 @@ export const ChinaMap = forwardRef<ChinaMapHandle, Props>(function ChinaMap(
 				nameEn: d.nameEn,
 				x: q.x,
 				y: q.y,
-				provinceIndex: pidx
+				provinceIndex: pidx,
+				national: true,
 			};
 		}).filter((p): p is DestPin => Boolean(p));
-		const extra = mine.map((d, i) => {
+		const extra = mine.map((d) => {
 			const pidx = data.provinces.findIndex((p) => p.id === d.provinceId);
 			if (pidx < 0) return null;
-			if (d.lon != null && d.lat != null) {
-				const q = toQuantized(d.lon, d.lat, data.bounds, data.q);
-				return {
-					slug: d.slug,
-					nameZh: d.nameZh,
-					nameEn: d.nameEn,
-					x: q.x,
-					y: q.y,
-					provinceIndex: pidx
-				};
-			}
 			const prov = data.provinces[pidx];
 			if (!prov) return null;
-			const nudge = ((i % 5) - 2) * 6;
+			let x = prov.cp[0];
+			let y = prov.cp[1];
+			if (d.cityCp) {
+				x = d.cityCp[0];
+				y = d.cityCp[1];
+			} else if (d.lon != null && d.lat != null) {
+				const q = toQuantized(d.lon, d.lat, data.bounds, data.q);
+				x = q.x;
+				y = q.y;
+			} else if (d.cityName) {
+				const city = prov.cities?.find((c) => c.name === d.cityName);
+				if (city) {
+					x = city.cp[0];
+					y = city.cp[1];
+				}
+			}
 			return {
 				slug: d.slug,
 				nameZh: d.nameZh,
 				nameEn: d.nameEn,
-				x: prov.cp[0] + nudge,
-				y: prov.cp[1] + Math.floor(i / 5) * 6,
-				provinceIndex: pidx
+				x,
+				y,
+				provinceIndex: pidx,
+				national: d.national !== false,
 			};
 		}).filter((p): p is DestPin => Boolean(p));
 		return [...editorial, ...extra];
@@ -856,7 +863,7 @@ export const ChinaMap = forwardRef<ChinaMapHandle, Props>(function ChinaMap(
 				ctx.fillText(locPlace(st.name, locale), sx + r + 5, sy - 1);
 			}
 		} else {
-			const savedPins = pins.filter((p) => saved.includes(p.slug)).slice().sort((a, b) => destinations.findIndex((d) => d.slug === a.slug) - destinations.findIndex((d) => d.slug === b.slug));
+			const savedPins = pins.filter((p) => saved.includes(p.slug) && (focusedIdx == null ? p.national : p.provinceIndex === focusedIdx || p.national)).slice().sort((a, b) => destinations.findIndex((d) => d.slug === a.slug) - destinations.findIndex((d) => d.slug === b.slug));
 			if (savedPins.length > 1) {
 				ctx.beginPath();
 				ctx.strokeStyle = withAlpha(cinnabarHex, .7);
@@ -874,10 +881,18 @@ export const ChinaMap = forwardRef<ChinaMapHandle, Props>(function ChinaMap(
 			ctx.font = "500 12px \"Noto Serif SC\", serif";
 			ctx.textAlign = "left";
 			for (const pin of pins) {
+				const inFocus = focusedIdx != null && pin.provinceIndex === focusedIdx;
+				const localT = pin.national ? 1 : inFocus ? fade : 0;
+				if (localT < 0.02) continue;
 				const { sx, sy } = toS(pin.x, pin.y);
-				const pinA = focusedIdx == null || pin.provinceIndex === focusedIdx ? 1 : 1 - fade * .72;
+				const pinA =
+					(pin.national
+						? focusedIdx == null || inFocus
+							? 1
+							: 1 - fade * .72
+						: 1) * localT;
 				const active = pin.slug === selectedSlug || saved.includes(pin.slug);
-				const r = active ? 5 : 3.6;
+				const r = (active ? 5 : 3.6) * (pin.national ? 1 : 0.25 + 0.75 * localT);
 				if (pin.slug === selectedSlug) {
 					ctx.beginPath();
 					ctx.strokeStyle = withAlpha(cinnabarHex, .5 * pinA);
@@ -1180,7 +1195,12 @@ export const ChinaMap = forwardRef<ChinaMapHandle, Props>(function ChinaMap(
 		const destR = 18 / viewRef.current.scale;
 		let dest = null;
 		let destD = destR * destR;
+		const focus = selectedIndex ?? lingerIndexRef.current;
+		const fadeNow = fadeRef.current;
 		if (mode === "travel") for (const p of pins) {
+			if (!p.national) {
+				if (focus == null || p.provinceIndex !== focus || fadeNow < 0.28) continue;
+			}
 			const dd = (p.x - wr.x) ** 2 + (p.y - wr.y) ** 2;
 			if (dd < destD) {
 				destD = dd;

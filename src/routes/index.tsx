@@ -9,6 +9,7 @@ import {
 import { DashboardPanel } from "@/components/dashboard-panel";
 import { destGeo } from "@/data/dest-geo";
 import { loadMapDots } from "@/lib/map-dots";
+import { useDestCache } from "@/lib/dest-cache";
 import { useCopy, useLocale } from "@/lib/locale";
 import { usePlanner, usePlannerHydration } from "@/lib/planner-store";
 
@@ -38,6 +39,7 @@ function Home() {
   const mapRef = useRef<ChinaMapHandle>(null);
   const saved = usePlanner((s) => s.saved);
   const ready = usePlannerHydration();
+  const mine = useDestCache((s) => s.items);
   const t = useCopy();
   const { locale } = useLocale();
 
@@ -58,22 +60,25 @@ function Home() {
     };
   }, []);
 
+  const provinceIdOf = (slug: string) =>
+    destGeo[slug]?.provinceId ?? mine.find((d) => d.slug === slug)?.provinceId;
+
   useEffect(() => {
     if (!data || !selectedSlug) return;
-    const g = destGeo[selectedSlug];
-    if (!g) return;
-    const pidx = data.provinces.findIndex((p) => p.id === g.provinceId);
+    const pid = provinceIdOf(selectedSlug);
+    if (!pid) return;
+    const pidx = data.provinces.findIndex((p) => p.id === pid);
     if (pidx >= 0) {
       setSelectedIndex((curr) => (curr === pidx ? curr : pidx));
     }
-  }, [data, selectedSlug]);
+  }, [data, selectedSlug, mine]);
 
   const onSelectDest = (slug: string | null) => {
     setSelectedSlug(slug);
     if (!slug || !data) return;
-    const g = destGeo[slug];
-    if (!g) return;
-    const pidx = data.provinces.findIndex((p) => p.id === g.provinceId);
+    const pid = provinceIdOf(slug);
+    if (!pid) return;
+    const pidx = data.provinces.findIndex((p) => p.id === pid);
     setSelectedIndex(pidx >= 0 ? pidx : null);
   };
 
@@ -83,8 +88,8 @@ function Home() {
     setSelectedSlug((slug) => {
       if (!slug) return slug;
       const pid = data.provinces[index]?.id;
-      const g = destGeo[slug];
-      if (g && g.provinceId !== pid) return null;
+      const own = provinceIdOf(slug);
+      if (own && own !== pid) return null;
       return slug;
     });
   };

@@ -1,29 +1,27 @@
 import { useEffect, useState } from "react";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import { isNationalCity } from "@/data/city-rank";
 import { destinations } from "@/data/destinations";
 import type { Destination, Intensity, RegionId, SeasonId } from "@/data/types";
 
-/**
- * A destination the reader wrote. Same article shape as the editorial atlas.
- * `origin` is always `"local"` until a personal server is wired.
- */
+export type StayChoice = "day" | "long" | number;
+
 export type CustomDestination = Destination & {
   origin: "local";
   createdAt: number;
   updatedAt: number;
   provinceId: string;
+  cityName: string;
+  cityCp?: [number, number];
+  national: boolean;
+  stay: StayChoice;
+  headline?: string;
+  pace?: string;
   lon?: number;
   lat?: number;
 };
 
-/**
- * Persistence seam.
- *
- * Active backend is the browser cache (zustand persist → localStorage).
- * `createRemoteDestCache` keeps the signature for a future signed-in store.
- * Callers never talk to a server today.
- */
 export type DestCacheBackend = {
   kind: "local" | "remote";
   pull(): Promise<CustomDestination[] | null>;
@@ -38,7 +36,6 @@ export const localDestCache: DestCacheBackend = {
   async push() {},
 };
 
-/** Reserved. Not called. Swap `destCacheBackend` to this when a personal store exists. */
 export function createRemoteDestCache(_opts: {
   endpoint: string;
   getToken?: () => Promise<string | null>;
@@ -105,28 +102,51 @@ export function slugFromNames(nameEn: string, nameZh: string, taken: string[]) {
   return `${base}-${n}`;
 }
 
+export function stayToIndex(stay: StayChoice) {
+  if (stay === "day") return 0;
+  if (stay === "long") return 16;
+  return Math.min(15, Math.max(1, Number(stay) || 1));
+}
+
+export function indexToStay(n: number): StayChoice {
+  if (n <= 0) return "day";
+  if (n >= 16) return "long";
+  return n;
+}
+
+export function stayLabel(stay: StayChoice, locale: "zh" | "en") {
+  if (stay === "day") return locale === "en" ? "Within a day" : "日内";
+  if (stay === "long") return locale === "en" ? "A long stay" : "长期";
+  const n = Number(stay);
+  if (locale === "en") return n === 1 ? "1 day" : `${n} days`;
+  return `${n} 日`;
+}
+
+export function parseStay(days: string | undefined, stay?: StayChoice): StayChoice {
+  if (stay === "day" || stay === "long") return stay;
+  if (typeof stay === "number" && stay >= 1 && stay <= 15) return stay;
+  const raw = String(days ?? "");
+  if (/长期|long stay|long-term/i.test(raw)) return "long";
+  if (/日内|当日|within a day/i.test(raw)) return "day";
+  const n = Number.parseInt(raw, 10);
+  if (n >= 1 && n <= 15) return n;
+  return 3;
+}
+
 export function emptyHighlights(): { title: string; text: string }[] {
-  return [
-    { title: "", text: "" },
-    { title: "", text: "" },
-    { title: "", text: "" },
-  ];
+  return [{ title: "", text: "" }];
 }
 
 export function emptyItinerary(
   locale: "zh" | "en",
 ): { day: string; title: string; text: string }[] {
-  return locale === "en"
-    ? [
-        { day: "Day 1", title: "", text: "" },
-        { day: "Day 2", title: "", text: "" },
-        { day: "Day 3", title: "", text: "" },
-      ]
-    : [
-        { day: "第一日", title: "", text: "" },
-        { day: "第二日", title: "", text: "" },
-        { day: "第三日", title: "", text: "" },
-      ];
+  return [
+    {
+      day: locale === "en" ? "Day 1" : "第一日",
+      title: "",
+      text: "",
+    },
+  ];
 }
 
 export function emptyPractical(
@@ -137,24 +157,25 @@ export function emptyPractical(
         { label: "Season", value: "" },
         { label: "Arrive", value: "" },
         { label: "Stay", value: "" },
-        { label: "Pace", value: "" },
+        { label: "Atmosphere", value: "" },
       ]
     : [
         { label: "最佳季节", value: "" },
         { label: "如何抵达", value: "" },
         { label: "建议停留", value: "" },
-        { label: "节奏", value: "" },
+        { label: "氛围", value: "" },
       ];
 }
 
 export type DestDraft = {
-  nameZh: string;
-  nameEn: string;
+  headline: string;
   provinceId: string;
+  cityName: string;
+  cityCp: [number, number] | null;
+  stay: StayChoice;
   seasons: SeasonId[];
-  days: string;
   intensity: Intensity;
-  tagline: string;
+  pace: string;
   excerpt: string;
   body: string;
   image: string;
@@ -163,28 +184,27 @@ export type DestDraft = {
   practical: { label: string; value: string }[];
 };
 
+function atLeastOne<T>(list: T[], blank: T): T[] {
+  return list.length ? list : [blank];
+}
+
 export function draftFromDest(d: CustomDestination): DestDraft {
   return {
-    nameZh: d.nameZh,
-    nameEn: d.nameEn,
+    headline: d.headline || d.tagline || "",
     provinceId: d.provinceId,
+    cityName: d.cityName ?? "",
+    cityCp: d.cityCp ?? null,
+    stay: parseStay(d.days, d.stay),
     seasons: d.seasons,
-    days: d.days,
     intensity: d.intensity,
-    tagline: d.tagline,
+    pace: d.pace || d.intensity,
     excerpt: d.excerpt,
     body: d.body,
     image: d.image,
-    highlights: pad3(d.highlights, { title: "", text: "" }),
-    itinerary: pad3(d.itinerary, { day: "", title: "", text: "" }),
+    highlights: atLeastOne(d.highlights, { title: "", text: "" }),
+    itinerary: atLeastOne(d.itinerary, { day: "", title: "", text: "" }),
     practical: pad4(d.practical),
   };
-}
-
-function pad3<T>(list: T[], blank: T): T[] {
-  const next = list.slice(0, 3);
-  while (next.length < 3) next.push(blank);
-  return next;
 }
 
 function pad4(list: { label: string; value: string }[]) {
@@ -195,13 +215,14 @@ function pad4(list: { label: string; value: string }[]) {
 
 export function blankDraft(locale: "zh" | "en"): DestDraft {
   return {
-    nameZh: "",
-    nameEn: "",
+    headline: "",
     provinceId: "",
+    cityName: "",
+    cityCp: null,
+    stay: 3,
     seasons: [],
-    days: locale === "en" ? "3 days" : "3 日",
     intensity: "中",
-    tagline: "",
+    pace: "中",
     excerpt: "",
     body: "",
     image: "/images/hangzhou.jpg",
@@ -217,15 +238,24 @@ export function draftToRecord(
     slug: string;
     region: RegionId;
     province: string;
+    nameEn: string;
     createdAt: number;
+    locale: "zh" | "en";
   },
 ): CustomDestination {
   const highlights = draft.highlights.filter((h) => h.title.trim() || h.text.trim());
   const itinerary = draft.itinerary.filter(
     (h) => h.title.trim() || h.text.trim() || h.day.trim(),
   );
-  const nameZh = draft.nameZh.trim();
-  const nameEn = draft.nameEn.trim() || nameZh;
+  const cityName = draft.cityName.trim();
+  const nameZh = cityName;
+  const nameEn = opts.nameEn || cityName;
+  const headline = draft.headline.trim();
+  const days = stayLabel(draft.stay, opts.locale);
+  const practical = draft.practical.map((p) => {
+    if (/停留|Stay/i.test(p.label)) return { ...p, value: days };
+    return p;
+  });
   return {
     slug: opts.slug,
     nameZh,
@@ -233,18 +263,32 @@ export function draftToRecord(
     province: opts.province,
     region: opts.region,
     seasons: draft.seasons.length ? draft.seasons : ["autumn"],
-    days: draft.days.trim() || "3 日",
+    days,
     intensity: draft.intensity,
-    tagline: draft.tagline.trim() || nameZh,
-    excerpt: draft.excerpt.trim() || draft.tagline.trim() || nameZh,
-    body: draft.body.trim() || draft.excerpt.trim() || draft.tagline.trim() || nameZh,
+    tagline: headline || nameZh,
+    excerpt: draft.excerpt.trim() || headline || nameZh,
+    body: draft.body.trim() || draft.excerpt.trim() || headline || nameZh,
     image: draft.image.trim() || "/images/hangzhou.jpg",
     highlights,
     itinerary,
-    practical: draft.practical.filter((p) => p.label.trim() || p.value.trim()),
+    practical: practical.filter((p) => p.label.trim() || p.value.trim()),
     origin: "local",
     createdAt: opts.createdAt,
     updatedAt: Date.now(),
     provinceId: draft.provinceId,
+    cityName,
+    cityCp: draft.cityCp ?? undefined,
+    national: isNationalCity(draft.provinceId, cityName),
+    stay: draft.stay,
+    headline,
+    pace: draft.pace,
   };
+}
+
+export function itineraryDayLabel(index: number, locale: "zh" | "en") {
+  const n = index + 1;
+  if (locale === "en") return `Day ${n}`;
+  const ordinal = ["一", "二", "三", "四", "五", "六", "七", "八", "九", "十"];
+  if (n <= 10) return `第${ordinal[n - 1]}日`;
+  return `第 ${n} 日`;
 }
