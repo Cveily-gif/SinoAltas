@@ -6,7 +6,7 @@ import { copy } from "@/data/i18n/copy";
 import { locDest } from "@/data/i18n/localize";
 import { placeNameEn } from "@/data/i18n/places";
 import type { Locale } from "@/lib/locale";
-import type { RegionId } from "@/data/types";
+import type { Destination, RegionId } from "@/data/types";
 
 const REGION_ORDER: RegionId[] = [
   "north",
@@ -72,9 +72,12 @@ export function composeItinerary(
   slugs: string[],
   totalDays: number,
   locale: Locale = "zh",
+  extras: Destination[] = [],
 ): DayPlan[] {
+  const lookup = (slug: string) =>
+    extras.find((d) => d.slug === slug) ?? getDestination(slug);
   const dests = slugs
-    .map((slug) => getDestination(slug))
+    .map((slug) => lookup(slug))
     .filter((d): d is NonNullable<typeof d> => Boolean(d))
     .sort(
       (a, b) =>

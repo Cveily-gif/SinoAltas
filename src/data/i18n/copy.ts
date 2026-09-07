@@ -69,6 +69,39 @@ export type Copy = {
   practical: string;
   related: string;
   alsoRead: string;
+  mineCta: string;
+  mineKicker: string;
+  mineTitle: string;
+  mineLead: string;
+  mineHint: string;
+  mineSubmit: string;
+  mineEdit: string;
+  mineRemove: string;
+  mineConfirm: string;
+  mineCancel: string;
+  mineSaved: string;
+  mineNeedName: string;
+  mineNeedProvince: string;
+  mineNameZh: string;
+  mineNameEn: string;
+  mineProvince: string;
+  mineSeasons: string;
+  mineDays: string;
+  mineIntensity: string;
+  mineTagline: string;
+  mineExcerpt: string;
+  mineBody: string;
+  mineCover: string;
+  mineCoverUrl: string;
+  mineHlTitle: string;
+  mineHlText: string;
+  mineItinDay: string;
+  mineItinTitle: string;
+  mineItinText: string;
+  minePracValue: string;
+  mineBadge: string;
+  mineLoading: string;
+  destCoverPick: string;
   expTitle: string;
   expLead: string;
   relatedCities: string;
@@ -192,6 +225,40 @@ export const copy: Record<"zh" | "en", Copy> = {
     practical: "行前",
     related: "附近可走",
     alsoRead: "手记",
+    mineCta: "记下你的城",
+    mineKicker: "Mine",
+    mineTitle: "记下你的城",
+    mineLead:
+      "体例与图志相同：一句印象、一段正文、三处、三日。先写在这台设备上，云端留给以后。",
+    mineHint: "不会上传到服务器。清掉此站缓存之前，关闭浏览器也不会丢。",
+    mineSubmit: "收进此机",
+    mineEdit: "改一改",
+    mineRemove: "从这台设备抹去",
+    mineConfirm: "确认抹去",
+    mineCancel: "留下",
+    mineSaved: "已记在此机",
+    mineNeedName: "先写下城的名字。",
+    mineNeedProvince: "选一个省份，图幅才知道它落在何处。",
+    mineNameZh: "中文名",
+    mineNameEn: "英文名",
+    mineProvince: "省份",
+    mineSeasons: "季节",
+    mineDays: "建议停留",
+    mineIntensity: "强度",
+    mineTagline: "一句印象",
+    mineExcerpt: "摘句",
+    mineBody: "正文",
+    mineCover: "封面",
+    mineCoverUrl: "或贴一张图的地址",
+    mineHlTitle: "标题",
+    mineHlText: "一句",
+    mineItinDay: "日次",
+    mineItinTitle: "这一日",
+    mineItinText: "怎么走",
+    minePracValue: "写下",
+    mineBadge: "我的",
+    mineLoading: "正在展开你写下的城",
+    destCoverPick: "从图志里借一张",
     expTitle: "体验",
     expLead: "风景之外，中国还有可以被喝、被吃、被写、被走进去的部分。",
     relatedCities: "相关城市",
@@ -314,6 +381,41 @@ export const copy: Record<"zh" | "en", Copy> = {
     practical: "Before you go",
     related: "Nearby",
     alsoRead: "Journal",
+    mineCta: "Write a city",
+    mineKicker: "Mine",
+    mineTitle: "Write a city",
+    mineLead:
+      "The same form as the atlas: an impression, a body, three things, three days. Kept on this device for now; a personal store can wait.",
+    mineHint:
+      "Nothing is sent to a server. It remains until this browser forgets the site.",
+    mineSubmit: "Keep on this device",
+    mineEdit: "Revise",
+    mineRemove: "Erase from this device",
+    mineConfirm: "Erase it",
+    mineCancel: "Keep it",
+    mineSaved: "Kept on this device",
+    mineNeedName: "Give the city a name first.",
+    mineNeedProvince: "Choose a province so the atlas knows where it falls.",
+    mineNameZh: "Chinese name",
+    mineNameEn: "English name",
+    mineProvince: "Province",
+    mineSeasons: "Seasons",
+    mineDays: "Stay",
+    mineIntensity: "Pace",
+    mineTagline: "A line of impression",
+    mineExcerpt: "Excerpt",
+    mineBody: "Body",
+    mineCover: "Cover",
+    mineCoverUrl: "Or paste an image address",
+    mineHlTitle: "Title",
+    mineHlText: "A sentence",
+    mineItinDay: "Day",
+    mineItinTitle: "This day",
+    mineItinText: "How to walk it",
+    minePracValue: "Write",
+    mineBadge: "Yours",
+    mineLoading: "Unfolding the city you wrote",
+    destCoverPick: "Borrow a plate from the atlas",
     expTitle: "Craft",
     expLead:
       "Beyond the view, China can be drunk, eaten, written, and walked into.",

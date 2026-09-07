@@ -3,8 +3,8 @@ import { ArrowRight, Bookmark, X } from "lucide-react";
 import { SaveButton } from "@/components/save-button";
 import { Button } from "@/components/ui/button";
 import type { AtlasMode, MapDots } from "@/components/china-map";
-import { destsForProvince, destsForRegion, provinceMeta } from "@/data/provinces";
-import { destinations, getDestination, regions } from "@/data/destinations";
+import { provinceMeta } from "@/data/provinces";
+import { regions } from "@/data/destinations";
 import type { Destination } from "@/data/types";
 import {
   destDisplayName,
@@ -14,6 +14,8 @@ import {
   locProvinceFull,
   locProvinceLockup,
 } from "@/data/i18n/localize";
+import { allDestinations, destsInProvince, destsInRegion, findDest } from "@/lib/dest-catalog";
+import { useDestCache, useDestCacheHydration } from "@/lib/dest-cache";
 import { shortProvinceName } from "@/lib/geo";
 import { useCopy, useLocale } from "@/lib/locale";
 import {
@@ -110,19 +112,22 @@ export function DashboardPanel({
   const setDays = usePlanner((s) => s.setDays);
   const clear = usePlanner((s) => s.clear);
   const ready = usePlannerHydration();
+  useDestCacheHydration();
   const t = useCopy();
   const { locale } = useLocale();
   const savedSlugs = ready ? saved : [];
-  const plan = composeItinerary(savedSlugs, days, locale);
+  const mine = useDestCache((s) => s.items);
+  const catalog = allDestinations(mine);
+  const plan = composeItinerary(savedSlugs, days, locale, mine);
 
-  const dest = selectedSlug ? getDestination(selectedSlug) : undefined;
+  const dest = selectedSlug ? findDest(selectedSlug, mine) : undefined;
   const province =
     selectedIndex != null ? data?.provinces[selectedIndex] : undefined;
   const hoverProv =
     hoverIndex != null ? data?.provinces[hoverIndex] : undefined;
   const meta = province ? provinceMeta[province.id] : undefined;
-  const provinceDests = province ? destsForProvince(province.id) : [];
-  const regionDests = meta ? destsForRegion(meta.region) : [];
+  const provinceDests = province ? destsInProvince(province.id, mine) : [];
+  const regionDests = meta ? destsInRegion(meta.region, mine) : [];
   const region = meta
     ? regions.find((r) => r.id === meta.region)
     : undefined;
@@ -245,11 +250,11 @@ export function DashboardPanel({
             </p>
             <ul className="mt-2 space-y-1">
               {(provinceDests.length > 0 ? provinceDests : regionDests).map(
-                (d) => (
+                (d, i) => (
                   <li key={d.slug}>
                     <DestRow
                       dest={d}
-                      index={destinations.findIndex((x) => x.slug === d.slug)}
+                      index={i}
                       active={false}
                       saved={savedSlugs.includes(d.slug)}
                       onSelect={() => onSelectDest(d.slug)}
@@ -297,7 +302,7 @@ export function DashboardPanel({
                   key={r.id}
                   type="button"
                   onClick={() => {
-                    const first = destsForRegion(r.id)[0];
+                    const first = destsInRegion(r.id, mine)[0];
                     if (first) onSelectDest(first.slug);
                   }}
                   className="inline-flex h-10 items-center rounded-full border border-paper/15 px-3.5 text-sm text-paper/85 hover:border-cinnabar hover:text-paper"
@@ -310,7 +315,7 @@ export function DashboardPanel({
               {t.twentyTwo}
             </p>
             <ul className="mt-2 space-y-1">
-              {destinations.map((d, i) => (
+              {catalog.map((d, i) => (
                 <li key={d.slug}>
                   <DestRow
                     dest={d}
@@ -366,7 +371,7 @@ export function DashboardPanel({
             <>
               <ul className="mt-4 space-y-2">
                 {savedSlugs.map((slug) => {
-                  const d = getDestination(slug);
+                  const d = findDest(slug, mine);
                   if (!d) return null;
                   const view = locDest(d, locale);
                   const label = destDisplayName(d, locale);

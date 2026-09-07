@@ -13,6 +13,7 @@ import { hsrCorridors, hsrStations } from "@/data/hsr-lines";
 import { locPlace, locProvinceLockup } from "@/data/i18n/localize";
 import { copy } from "@/data/i18n/copy";
 import { shortProvinceName, toQuantized } from "@/lib/geo";
+import { useDestCache, useDestCacheHydration } from "@/lib/dest-cache";
 import type { Locale } from "@/lib/locale";
 import { cn } from "@/lib/utils";
 
@@ -42,6 +43,7 @@ export type AtlasMode = "travel" | "rail";
 export type DestPin = {
   slug: string;
   nameZh: string;
+  nameEn: string;
   x: number;
   y: number;
   provinceIndex: number;
@@ -255,6 +257,8 @@ export const ChinaMap = forwardRef<ChinaMapHandle, Props>(function ChinaMap(
 	const insetLayoutRef = useRef<InsetBox[]>([]);
 	const [cursor, setCursor] = useState<"crosshair" | "pointer" | "grab" | "grabbing">("crosshair");
 	const [cityBadge, setCityBadge] = useState<string | null>(null);
+	useDestCacheHydration();
+	const mine = useDestCache((s) => s.items);
 	const MAX_Z = 7;
 	if (selectedIndex != null) {
 		focusIndexRef.current = selectedIndex;
@@ -267,7 +271,7 @@ export const ChinaMap = forwardRef<ChinaMapHandle, Props>(function ChinaMap(
 		onSelectProvince(null);
 	};
 	const pins = useMemo(() => {
-		return destinations.map((d) => {
+		const editorial = destinations.map((d) => {
 			const g = destGeo[d.slug];
 			if (!g) return null;
 			const pidx = data.provinces.findIndex((p) => p.id === g.provinceId);
@@ -275,15 +279,44 @@ export const ChinaMap = forwardRef<ChinaMapHandle, Props>(function ChinaMap(
 			return {
 				slug: d.slug,
 				nameZh: d.nameZh,
+				nameEn: d.nameEn,
 				x: q.x,
 				y: q.y,
 				provinceIndex: pidx
 			};
 		}).filter((p): p is DestPin => Boolean(p));
+		const extra = mine.map((d, i) => {
+			const pidx = data.provinces.findIndex((p) => p.id === d.provinceId);
+			if (pidx < 0) return null;
+			if (d.lon != null && d.lat != null) {
+				const q = toQuantized(d.lon, d.lat, data.bounds, data.q);
+				return {
+					slug: d.slug,
+					nameZh: d.nameZh,
+					nameEn: d.nameEn,
+					x: q.x,
+					y: q.y,
+					provinceIndex: pidx
+				};
+			}
+			const prov = data.provinces[pidx];
+			if (!prov) return null;
+			const nudge = ((i % 5) - 2) * 6;
+			return {
+				slug: d.slug,
+				nameZh: d.nameZh,
+				nameEn: d.nameEn,
+				x: prov.cp[0] + nudge,
+				y: prov.cp[1] + Math.floor(i / 5) * 6,
+				provinceIndex: pidx
+			};
+		}).filter((p): p is DestPin => Boolean(p));
+		return [...editorial, ...extra];
 	}, [
 		data.bounds,
 		data.provinces,
-		data.q
+		data.q,
+		mine
 	]);
 	const railPaths = useMemo(() => {
 		const smooth = (pts: [number, number][], segs: number) => {
@@ -863,7 +896,7 @@ export const ChinaMap = forwardRef<ChinaMapHandle, Props>(function ChinaMap(
 				ctx.stroke();
 				if (pin.slug === selectedSlug || pin.slug === hoverDest.current || active) {
 					ctx.fillStyle = withAlpha(paperHex, pinA);
-					ctx.fillText(locale === "en" ? destinations.find((d) => d.slug === pin.slug)?.nameEn ?? pin.nameZh : pin.nameZh, sx + 9, sy - 1);
+					ctx.fillText(locale === "en" ? pin.nameEn || pin.nameZh : pin.nameZh, sx + 9, sy - 1);
 				}
 			}
 		}

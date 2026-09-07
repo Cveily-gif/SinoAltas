@@ -16,6 +16,7 @@ import { Route as PlannerRouteImport } from './routes/planner'
 import { Route as SeasonsRouteImport } from './routes/seasons'
 import { Route as DestinationsIndexRouteImport } from './routes/destinations.index'
 import { Route as DestinationsSlugRouteImport } from './routes/destinations.$slug'
+import { Route as DestinationsNewRouteImport } from './routes/destinations.new'
 import { Route as JournalIndexRouteImport } from './routes/journal.index'
 import { Route as JournalSlugRouteImport } from './routes/journal.$slug'
 
@@ -54,6 +55,11 @@ const DestinationsSlugRoute = DestinationsSlugRouteImport.update({
   path: '/destinations/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DestinationsNewRoute = DestinationsNewRouteImport.update({
+  id: '/destinations/new',
+  path: '/destinations/new',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const JournalIndexRoute = JournalIndexRouteImport.update({
   id: '/journal/',
   path: '/journal/',
@@ -72,6 +78,7 @@ export interface FileRoutesByFullPath {
   '/planner': typeof PlannerRoute
   '/seasons': typeof SeasonsRoute
   '/destinations/$slug': typeof DestinationsSlugRoute
+  '/destinations/new': typeof DestinationsNewRoute
   '/journal/$slug': typeof JournalSlugRoute
   '/destinations/': typeof DestinationsIndexRoute
   '/journal/': typeof JournalIndexRoute
@@ -83,6 +90,7 @@ export interface FileRoutesByTo {
   '/planner': typeof PlannerRoute
   '/seasons': typeof SeasonsRoute
   '/destinations/$slug': typeof DestinationsSlugRoute
+  '/destinations/new': typeof DestinationsNewRoute
   '/journal/$slug': typeof JournalSlugRoute
   '/destinations': typeof DestinationsIndexRoute
   '/journal': typeof JournalIndexRoute
@@ -95,6 +103,7 @@ export interface FileRoutesById {
   '/planner': typeof PlannerRoute
   '/seasons': typeof SeasonsRoute
   '/destinations/$slug': typeof DestinationsSlugRoute
+  '/destinations/new': typeof DestinationsNewRoute
   '/journal/$slug': typeof JournalSlugRoute
   '/destinations/': typeof DestinationsIndexRoute
   '/journal/': typeof JournalIndexRoute
@@ -108,6 +117,7 @@ export interface FileRouteTypes {
     | '/planner'
     | '/seasons'
     | '/destinations/$slug'
+    | '/destinations/new'
     | '/journal/$slug'
     | '/destinations/'
     | '/journal/'
@@ -119,6 +129,7 @@ export interface FileRouteTypes {
     | '/planner'
     | '/seasons'
     | '/destinations/$slug'
+    | '/destinations/new'
     | '/journal/$slug'
     | '/destinations'
     | '/journal'
@@ -130,6 +141,7 @@ export interface FileRouteTypes {
     | '/planner'
     | '/seasons'
     | '/destinations/$slug'
+    | '/destinations/new'
     | '/journal/$slug'
     | '/destinations/'
     | '/journal/'
@@ -142,6 +154,7 @@ export interface RootRouteChildren {
   PlannerRoute: typeof PlannerRoute
   SeasonsRoute: typeof SeasonsRoute
   DestinationsSlugRoute: typeof DestinationsSlugRoute
+  DestinationsNewRoute: typeof DestinationsNewRoute
   JournalSlugRoute: typeof JournalSlugRoute
   DestinationsIndexRoute: typeof DestinationsIndexRoute
   JournalIndexRoute: typeof JournalIndexRoute
@@ -198,6 +211,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DestinationsSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/destinations/new': {
+      id: '/destinations/new'
+      path: '/destinations/new'
+      fullPath: '/destinations/new'
+      preLoaderRoute: typeof DestinationsNewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/journal/': {
       id: '/journal/'
       path: '/journal'
@@ -222,6 +242,7 @@ const rootRouteChildren: RootRouteChildren = {
   PlannerRoute: PlannerRoute,
   SeasonsRoute: SeasonsRoute,
   DestinationsSlugRoute: DestinationsSlugRoute,
+  DestinationsNewRoute: DestinationsNewRoute,
   JournalSlugRoute: JournalSlugRoute,
   DestinationsIndexRoute: DestinationsIndexRoute,
   JournalIndexRoute: JournalIndexRoute,

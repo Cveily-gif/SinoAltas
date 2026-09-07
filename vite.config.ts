@@ -150,7 +150,9 @@ export default defineConfig(({ command, isPreview }) => ({
     host: "0.0.0.0",
     port: 8080,
     strictPort: true,
-    allowedHosts: ["vimadex.com", "www.vimadex.com"],
+    // Grok live preview arrives on a proxy host, not vimadex.com.
+    // Restricting this list 403s the right-hand pane.
+    allowedHosts: true,
   },
   preview: {
     host: "127.0.0.1",

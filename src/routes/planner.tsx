@@ -2,8 +2,10 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Bookmark, Trash2 } from "lucide-react";
 import { SectionKicker } from "@/components/section-kicker";
 import { Button } from "@/components/ui/button";
-import { destinations, getDestination } from "@/data/destinations";
+import { destinations } from "@/data/destinations";
 import { destDisplayName, locDest } from "@/data/i18n/localize";
+import { allDestinations, findDest } from "@/lib/dest-catalog";
+import { useDestCache, useDestCacheHydration } from "@/lib/dest-cache";
 import { useCopy, useLocale } from "@/lib/locale";
 import { composeItinerary, usePlanner, usePlannerHydration } from "@/lib/planner-store";
 import { cn } from "@/lib/utils";
@@ -23,13 +25,16 @@ function PlannerPage() {
   const setNotes = usePlanner((s) => s.setNotes);
   const clear = usePlanner((s) => s.clear);
   const ready = usePlannerHydration();
+  const mineReady = useDestCacheHydration();
+  const mine = useDestCache((s) => s.items);
   const t = useCopy();
   const { locale } = useLocale();
+  const catalog = mineReady ? allDestinations(mine) : destinations;
 
   const picked = (ready ? saved : [])
-    .map((slug) => getDestination(slug))
+    .map((slug) => findDest(slug, mine))
     .filter((d): d is NonNullable<typeof d> => Boolean(d));
-  const plan = composeItinerary(ready ? saved : [], days, locale);
+  const plan = composeItinerary(ready ? saved : [], days, locale, mine);
 
   return (
     <div className="pt-16 sm:pt-[4.5rem]">
@@ -48,7 +53,7 @@ function PlannerPage() {
           <h2 className="font-display text-2xl">{t.plannerPick}</h2>
           <p className="mt-2 text-sm text-stone">{t.plannerPicked(picked.length)}</p>
           <ul className="mt-6 grid gap-3 sm:grid-cols-2">
-            {destinations.map((raw) => {
+            {catalog.map((raw) => {
               const d = locDest(raw, locale);
               const on = ready && saved.includes(raw.slug);
               return (

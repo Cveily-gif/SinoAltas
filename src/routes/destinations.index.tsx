@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Search } from "lucide-react";
+import { ArrowRight, Search } from "lucide-react";
 import { useMemo, useState } from "react";
 import { z } from "zod";
 import { DestinationCard } from "@/components/destination-card";
@@ -7,6 +7,8 @@ import { SectionKicker } from "@/components/section-kicker";
 import { destinations, regions, seasons } from "@/data/destinations";
 import type { RegionId, SeasonId } from "@/data/types";
 import { locDest } from "@/data/i18n/localize";
+import { allDestinations, isMine } from "@/lib/dest-catalog";
+import { useDestCache, useDestCacheHydration } from "@/lib/dest-cache";
 import { useCopy, useLocale } from "@/lib/locale";
 import { cn } from "@/lib/utils";
 
@@ -28,10 +30,13 @@ function DestinationsPage() {
   const [q, setQ] = useState("");
   const t = useCopy();
   const { locale } = useLocale();
+  const mineReady = useDestCacheHydration();
+  const mine = useDestCache((s) => s.items);
+  const catalog = mineReady ? allDestinations(mine) : destinations;
 
   const list = useMemo(() => {
     const query = q.trim().toLowerCase();
-    return destinations.filter((raw) => {
+    return catalog.filter((raw) => {
       const d = locDest(raw, locale);
       if (region && raw.region !== region) return false;
       if (season && !raw.seasons.includes(season)) return false;
@@ -44,7 +49,7 @@ function DestinationsPage() {
         raw.province.includes(query)
       );
     });
-  }, [q, region, season, locale]);
+  }, [q, region, season, locale, catalog]);
 
   function setRegion(id?: RegionId) {
     void navigate({
@@ -127,6 +132,25 @@ function DestinationsPage() {
           ))}
         </div>
 
+        <Link
+          to="/destinations/new"
+          className="mt-8 flex flex-col gap-3 rounded-lg bg-ink px-5 py-6 text-paper sm:flex-row sm:items-end sm:justify-between"
+        >
+          <div>
+            <p className="text-latin text-[11px] tracking-[0.28em] uppercase text-paper/55">
+              {t.mineKicker}
+            </p>
+            <p className="mt-2 font-display text-2xl">{t.mineCta}</p>
+            <p className="mt-2 max-w-md text-sm leading-relaxed text-paper/70">
+              {t.mineLead}
+            </p>
+          </div>
+          <span className="inline-flex min-h-11 items-center gap-2 text-sm text-paper">
+            {t.mineSubmit}
+            <ArrowRight className="size-4" strokeWidth={1.6} />
+          </span>
+        </Link>
+
         {list.length === 0 ? (
           <p className="py-24 text-center text-stone">
             {t.destEmpty}{" "}
@@ -149,6 +173,7 @@ function DestinationsPage() {
                 key={d.slug}
                 dest={d}
                 index={String(i + 1).padStart(2, "0")}
+                mine={isMine(d.slug, mine)}
               />
             ))}
           </div>
